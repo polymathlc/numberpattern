@@ -384,6 +384,52 @@ body {
 .answer-feedback.correct { color: var(--green); }
 .answer-feedback.wrong { color: var(--red); }
 
+/* ===== SUB-QUESTIONS (a, b, c) WITH INDIVIDUAL BLANKS ===== */
+.sub-questions-area {
+  margin-top: 18px;
+}
+.sub-q-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 16px; margin-bottom: 8px;
+  background: #f8f9fc; border-radius: var(--radius-sm);
+  border-left: 4px solid var(--teal); flex-wrap: wrap;
+}
+.sub-q-row:nth-child(2) { border-left-color: var(--purple); }
+.sub-q-row:nth-child(3) { border-left-color: var(--magenta); }
+.sub-q-label {
+  font-weight: 800; font-size: 14px; color: var(--text-dark);
+  min-width: 0; flex: 1 1 260px;
+  font-family: 'Nunito', sans-serif; line-height: 1.4;
+}
+.sub-q-input-wrap {
+  display: flex; align-items: center; gap: 8px; flex-shrink: 0;
+}
+.sub-q-input {
+  padding: 8px 12px; border: 2px solid #d0d5dd;
+  border-radius: 9px; font-family: 'JetBrains Mono', monospace;
+  font-size: 14px; font-weight: 600; width: 140px; outline: none;
+  transition: border-color 0.2s;
+}
+.sub-q-input:focus { border-color: var(--teal); }
+.sub-q-input.correct { border-color: var(--green); background: #e8f5e9; }
+.sub-q-input.wrong { border-color: var(--red); background: #ffebee; }
+.sub-q-check {
+  padding: 8px 14px; border: none; border-radius: 9px;
+  font-family: 'Nunito', sans-serif; font-size: 12px; font-weight: 800;
+  cursor: pointer; background: var(--teal); color: white; transition: all 0.2s;
+}
+.sub-q-check:hover { background: var(--teal-dark); }
+.sub-q-fb { font-weight: 700; font-size: 12px; display: none; min-width: 22px; }
+.sub-q-fb.show { display: inline-flex; align-items: center; }
+.sub-q-fb.correct { color: var(--green); }
+.sub-q-fb.wrong { color: var(--red); }
+.sub-q-all-correct {
+  display: none; text-align: center; padding: 10px;
+  background: linear-gradient(135deg, #e8f5e9, #c8e6c9); border-radius: var(--radius-sm);
+  font-weight: 800; color: var(--green-dark); font-size: 14px; margin-top: 6px;
+}
+.sub-q-all-correct.show { display: block; }
+
 /* ===== FINAL ANSWER ===== */
 .final-answer {
   display: none; background: linear-gradient(135deg, #e8f5e9, #f1f8e9);
@@ -691,7 +737,10 @@ var ORIG = [
 
   {n:5, title:"White & Grey Circles (Alternating)", tag:"alternating", tagLabel:"Alternating Pattern",
    tip:"Remember the formulae for the sum of consecutive numbers to solve these questions with ease!",
-   text:"Figures show white and grey circles in a pattern.\n\nFig 1: 1 white, 2 grey, total 3 | Fig 2: 4 white, 2 grey, total 6 | Fig 3: 4 white, 6 grey, total 10\n\n(a) How many grey circles in Figure 233?\n(b) How many total circles in Figure 128?\n(c) Which figure has 676 white circles?",
+   text:"The figures below show white and grey circles in a pattern.",
+   tableData:{headers:["Figure","White Circles","Grey Circles","Total"],rows:[[1,1,2,3],[2,4,2,6],[3,4,6,10]]},
+   subQs:["(a) How many grey circles in Figure 233?","(b) How many total circles in Figure 128?","(c) Which figure has 676 white circles?"],
+   subAnsNums:[[13806],[8385],[50,51]],
    answers:["(a) 13806","(b) 8385","(c) Figures 50 & 51"],
    ansNums:[13806,8385,50],
    steps:[
@@ -829,7 +878,11 @@ var ALT = [
    ]},
 
   {n:5, title:"Red & Blue Beads (Alternating)", tag:"alternating", tagLabel:"Alternating (Alt)", tagCls:"alt-tag",
-   text:"A string of red and blue beads follows a pattern.\n\nFig 1: 2 red, 1 blue, total 3 | Fig 2: 2 red, 4 blue, total 6 | Fig 3: 6 red, 4 blue, total 10\n\n(a) How many blue beads in Figure 200?\n(b) Total beads in Figure 75?\n(c) Which figure has 441 red beads?",
+   tip:"Remember the formulae for the sum of consecutive numbers to solve these questions with ease!",
+   text:"The figures below show red and blue beads in a pattern.",
+   tableData:{headers:["Figure","Red Beads","Blue Beads","Total"],rows:[[1,2,1,3],[2,2,4,6],[3,6,4,10]]},
+   subQs:["(a) How many blue beads in Figure 200?","(b) How many total beads in Figure 75?","(c) Which figure has 441 red beads?"],
+   subAnsNums:[[10100],[2850],[41,42]],
    answers:["(a) 10100","(b) 2850","(c) Figures 41 & 42"],
    ansLabel:"(a) 10100 (b) 2850 (c) Fig 41&42",
    ansNums:[10100,2850,41],
@@ -1054,6 +1107,7 @@ function questionCardHTML(q, qi, prefix, numCls) {
   var tagCls = q.tagCls || q.tag;
   var tagLabel = q.tagLabel;
   var ansText = q.answers ? q.answers.join(' | ') : String(q.answer);
+  var hasSubQs = q.subQs && q.subQs.length > 0;
 
   var h = '<div class="q-card"><div class="q-header">' +
     '<div class="q-number ' + numCls + '">' + label + '</div>' +
@@ -1064,15 +1118,46 @@ function questionCardHTML(q, qi, prefix, numCls) {
   h += '<div class="problem-box' + boxCls + '" data-icon="' + icon + '">' +
     q.text.replace(/\n/g, '<br>') + '</div>';
 
-  // Table if present
-  if (q.tableData) {
-    h += buildTableHTML(q.tableData);
+  if (hasSubQs) {
+    /* ── SUB-QUESTION LAYOUT: text → viz → table → (a)(b)(c) blanks ── */
+
+    // Visualization FIRST (bigger diagrams above table)
+    h += buildViz(q, qi, prefix);
+
+    // Table below diagram
+    if (q.tableData) {
+      h += buildTableHTML(q.tableData);
+    }
+
+    // Sub-questions with individual input blanks
+    h += '<div class="sub-questions-area">';
+    for (var s = 0; s < q.subQs.length; s++) {
+      var subKey = prefix + '-' + qi + '-sub' + s;
+      h += '<div class="sub-q-row">' +
+        '<div class="sub-q-label">' + q.subQs[s] + '</div>' +
+        '<div class="sub-q-input-wrap">' +
+        '<input type="text" class="sub-q-input" id="input-' + subKey + '" placeholder="Answer" ' +
+        'onkeydown="if(event.key===\'Enter\')checkSubAns(\'' + prefix + '\',' + qi + ',' + s + ')">' +
+        '<button class="sub-q-check" onclick="checkSubAns(\'' + prefix + '\',' + qi + ',' + s + ')">Check</button>' +
+        '<span class="sub-q-fb" id="fb-' + subKey + '"></span>' +
+        '</div></div>';
+    }
+    h += '<div class="sub-q-all-correct" id="allcorrect-' + prefix + '-' + qi + '">&#127942; All parts correct! Well done!</div>';
+    h += '</div>';
+
+  } else {
+    /* ── STANDARD LAYOUT: text → table → viz → single answer ── */
+
+    // Table if present
+    if (q.tableData) {
+      h += buildTableHTML(q.tableData);
+    }
+
+    // Visualization
+    h += buildViz(q, qi, prefix);
   }
 
-  // Visualization
-  h += buildViz(q, qi, prefix);
-
-  // Steps
+  // Steps area (always present)
   h += '<div class="steps-area"><div class="controls-bar">' +
     '<button class="step-btn primary" onclick="revealStep(\'' + prefix + '-' + qi + '\',' + nSteps + ')">Show Next Step &#9654;</button>' +
     '<button class="step-btn secondary" onclick="revealAll(\'' + prefix + '-' + qi + '\',' + nSteps + ')">Show All</button>' +
@@ -1095,12 +1180,14 @@ function questionCardHTML(q, qi, prefix, numCls) {
     '&#9989; Answer: <span style="font-size:20px;color:var(--purple);display:block;margin-top:3px;">' + fmtFrac(ansText) + '</span></div>';
   h += '</div>';
 
-  // Answer input
-  h += '<div class="answer-section"><label>Your Answer:</label>' +
-    '<input type="text" class="answer-input" id="input-' + prefix + '-' + qi + '" placeholder="Enter answer" ' +
-    'onkeydown="if(event.key===\'Enter\')checkAns(\'' + prefix + '\',' + qi + ')">' +
-    '<button class="check-btn" onclick="checkAns(\'' + prefix + '\',' + qi + ')">Check &#10003;</button>' +
-    '<span class="answer-feedback" id="fb-' + prefix + '-' + qi + '"></span></div>';
+  // Single answer input (only for non-subQs questions)
+  if (!hasSubQs) {
+    h += '<div class="answer-section"><label>Your Answer:</label>' +
+      '<input type="text" class="answer-input" id="input-' + prefix + '-' + qi + '" placeholder="Enter answer" ' +
+      'onkeydown="if(event.key===\'Enter\')checkAns(\'' + prefix + '\',' + qi + ')">' +
+      '<button class="check-btn" onclick="checkAns(\'' + prefix + '\',' + qi + ')">Check &#10003;</button>' +
+      '<span class="answer-feedback" id="fb-' + prefix + '-' + qi + '"></span></div>';
+  }
 
   h += '</div>';
   return h;
@@ -1282,36 +1369,46 @@ function buildViz(q, qi, prefix) {
   }
 
   else if (q.tag === 'alternating') {
-    /* Q5 / A5: WHITE & GREY CIRCLES — triangular pyramid with alternating row colours */
-    var isRed = (q.title.indexOf('Red') >= 0);
-    var wgData = isRed
-      ? [{w:2,g:1},{w:2,g:4},{w:6,g:4},{w:6,g:9},{w:12,g:9}]
-      : [{w:1,g:2},{w:4,g:2},{w:4,g:6},{w:9,g:6},{w:9,g:12}];
-    var wLabel = isRed ? 'R' : 'W';
-    var gLabel = isRed ? 'B' : 'G';
-    var wColor = isRed ? '#e74c3c' : '#ffffff';
-    var gColor = isRed ? '#2196f3' : '#95a5a6';
-    var wStroke = isRed ? '#c0392b' : '#7f8c8d';
-    for (var f = 0; f < 5; f++) {
-      var numRows = f + 2; /* Fig 1 → 2 rows, Fig 2 → 3 rows, etc. */
-      var cR = 6, sp2 = 16, pad3 = 10;
-      var svgW2 = numRows * sp2 + pad3 * 2;
-      var svgH2 = numRows * sp2 + pad3 * 2 + 20;
+    /* Q5 / A5: WHITE & GREY CIRCLES — triangular arrangement
+       Figure f has (f+1) rows; row r has r circles (1-indexed).
+       Odd rows = white, even rows = grey (or swapped for Red/Blue alt).
+       Circles are centered horizontally per row to form a triangle.
+       Show first 3 figures to match the reference diagram. */
+    var isAlt = (q.title.indexOf('Red') >= 0);
+    var figRows = [2, 3, 4]; /* Show 3 figures */
+    var wColor = isAlt ? '#e74c3c' : '#ffffff';
+    var gColor = isAlt ? '#2196f3' : '#95a5a6';
+    var wStroke = isAlt ? '#c0392b' : '#555555';
+    var gStroke = isAlt ? '#1565c0' : '#555555';
+    var wLabel = isAlt ? 'R' : 'W';
+    var gLabel = isAlt ? 'B' : 'G';
+
+    for (var f = 0; f < figRows.length; f++) {
+      var nRows = figRows[f];
+      var maxCols = nRows;
+      var cR = 13, sp2 = 34, pad3 = 18;
+      var svgW2 = maxCols * sp2 + pad3 * 2;
+      var svgH2 = nRows * sp2 + pad3 * 2 + 18;
       h += '<div class="pattern-fig"><svg width="' + svgW2 + '" height="' + svgH2 + '" viewBox="0 0 ' + svgW2 + ' ' + svgH2 + '">';
-      for (var row = 0; row < numRows; row++) {
-        var circlesInRow = row + 1;
-        var rowWidth = circlesInRow * sp2;
-        var startX = (svgW2 - rowWidth) / 2 + sp2 / 2;
-        /* Normal: even rows white, odd rows grey.  Red variant: even rows blue(g), odd rows red(w) */
-        var isWhiteRow = isRed ? (row % 2 === 1) : (row % 2 === 0);
-        for (var col = 0; col < circlesInRow; col++) {
-          var cx3 = startX + col * sp2;
-          var cy3 = pad3 + row * sp2 + sp2 / 2;
-          h += '<circle cx="' + cx3 + '" cy="' + cy3 + '" r="' + cR + '" fill="' + (isWhiteRow ? wColor : gColor) + '" stroke="' + (isWhiteRow ? wStroke : '#687078') + '" stroke-width="1.5"/>';
+      var wCount = 0, gCount = 0;
+      for (var row = 1; row <= nRows; row++) {
+        var numInRow = row;
+        var rowWidth = numInRow * sp2;
+        var xStart = (svgW2 - rowWidth) / 2 + sp2 / 2;
+        var cy3 = pad3 + (row - 1) * sp2 + sp2 / 2;
+        var isOddRow = (row % 2 === 1);
+        var isWhiteRow = isAlt ? !isOddRow : isOddRow;
+        for (var col = 0; col < numInRow; col++) {
+          var cx3 = xStart + col * sp2;
+          if (isWhiteRow) {
+            h += '<circle cx="' + cx3 + '" cy="' + cy3 + '" r="' + cR + '" fill="' + wColor + '" stroke="' + wStroke + '" stroke-width="2"/>';
+            wCount++;
+          } else {
+            h += '<circle cx="' + cx3 + '" cy="' + cy3 + '" r="' + cR + '" fill="' + gColor + '" stroke="' + gStroke + '" stroke-width="2"/>';
+            gCount++;
+          }
         }
       }
-      var d = wgData[f];
-      h += '<text x="' + (svgW2/2) + '" y="' + (svgH2 - 3) + '" text-anchor="middle" font-size="8" font-weight="700" fill="#7f8c8d">' + wLabel + ':' + d.w + ' ' + gLabel + ':' + d.g + '</text>';
       h += '</svg><div class="pattern-fig-label">Fig ' + (f + 1) + '</div></div>';
     }
   }
@@ -1689,6 +1786,65 @@ function checkAns(prefix, qi) {
   if (!correct) {
     input.classList.add('shake');
     setTimeout(function() { input.classList.remove('shake'); }, 500);
+  }
+}
+
+/* ==========================================================
+   SUB-QUESTION ANSWER CHECK (a, b, c individual blanks)
+   ========================================================== */
+function checkSubAns(prefix, qi, subIdx) {
+  var q = prefix === 'orig' ? ORIG[qi] : ALT[qi];
+  if (!q.subQs || !q.subAnsNums) return;
+
+  var subKey = prefix + '-' + qi + '-sub' + subIdx;
+  var input = document.getElementById('input-' + subKey);
+  var fb = document.getElementById('fb-' + subKey);
+  if (!input || !fb) return;
+
+  var uv = input.value.trim().replace(/\$/g, '').replace(/,/g, '').toLowerCase();
+  var uvNum = parseFloat(uv.replace(/[^0-9.\-]/g, ''));
+  var correct = false;
+
+  /* Check against accepted numbers for this sub-question */
+  var acceptedNums = q.subAnsNums[subIdx] || [];
+  for (var i = 0; i < acceptedNums.length; i++) {
+    if (!isNaN(uvNum) && Math.abs(uvNum - acceptedNums[i]) < 0.1) {
+      correct = true; break;
+    }
+  }
+
+  input.className = 'sub-q-input ' + (correct ? 'correct' : 'wrong');
+  fb.className = 'sub-q-fb show ' + (correct ? 'correct' : 'wrong');
+  fb.innerHTML = correct ? '&#9989;' : '&#10060;';
+
+  if (!correct) {
+    input.classList.add('shake');
+    setTimeout(function() { input.classList.remove('shake'); }, 500);
+  }
+
+  /* Track sub-question completion */
+  if (!state.subCompleted) state.subCompleted = {};
+  var qKey = prefix + '-' + qi;
+  if (!state.subCompleted[qKey]) state.subCompleted[qKey] = {};
+  if (correct) state.subCompleted[qKey][subIdx] = true;
+
+  /* Check if ALL sub-parts are answered correctly */
+  var allDone = true;
+  for (var s = 0; s < q.subQs.length; s++) {
+    if (!state.subCompleted[qKey][s]) { allDone = false; break; }
+  }
+
+  /* Show trophy banner when all parts correct */
+  var banner = document.getElementById('allcorrect-' + qKey);
+  if (banner) banner.className = 'sub-q-all-correct' + (allDone ? ' show' : '');
+
+  /* Award score point when all sub-questions answered */
+  if (allDone && !state.completed[qKey]) {
+    state.completed[qKey] = true;
+    state.score++;
+    document.getElementById('scoreVal').textContent = state.score;
+    var navItem = document.querySelector('.nav-item[data-idx="' + (qi + 1) + '"]');
+    if (navItem) navItem.classList.add('completed');
   }
 }
 
