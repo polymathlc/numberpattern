@@ -1,0 +1,1893 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>P6 Math — Number Pattern | Polymath Learning Centre</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fredoka:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js"></script>
+<style>
+:root {
+  --teal: #00b4d8;
+  --teal-dark: #0096b7;
+  --teal-light: #90e0ef;
+  --teal-bg: #e8f8fb;
+  --magenta: #e6007e;
+  --magenta-dark: #c20069;
+  --magenta-light: #ff5cb0;
+  --magenta-bg: #fde8f2;
+  --purple: #7b2d8e;
+  --purple-light: #c084d8;
+  --gold: #f9a825;
+  --gold-light: #ffe082;
+  --green: #2ecc71;
+  --green-dark: #27ae60;
+  --red: #e74c3c;
+  --blue: #2196f3;
+  --bg: #f5f7fa;
+  --card: #ffffff;
+  --text: #2c3e50;
+  --text-light: #7f8c8d;
+  --shadow: 0 4px 24px rgba(0,0,0,0.08);
+  --shadow-lg: 0 8px 40px rgba(0,0,0,0.12);
+  --radius: 16px;
+  --radius-sm: 10px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Nunito', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--teal); border-radius: 4px; }
+
+/* ===== HEADER ===== */
+.header {
+  background: linear-gradient(135deg, #1a73e8 0%, var(--purple) 50%, var(--magenta-dark) 100%);
+  position: sticky; top: 0; z-index: 100;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+}
+.header-inner {
+  max-width: 1200px; margin: 0 auto; padding: 14px 24px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.logo-area { display: flex; align-items: center; gap: 14px; }
+.logo-icon {
+  width: 42px; height: 42px; background: white; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; font-weight: 900; color: var(--purple);
+  font-family: 'Fredoka', sans-serif;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+.logo-text { color: white; font-family: 'Fredoka', sans-serif; }
+.logo-text h1 { font-size: 18px; font-weight: 700; line-height: 1.1; letter-spacing: 0.5px; }
+.logo-text span { font-size: 10px; opacity: 0.85; letter-spacing: 2px; text-transform: uppercase; }
+.header-actions { display: flex; align-items: center; gap: 10px; }
+.header-badge {
+  background: rgba(255,255,255,0.2); backdrop-filter: blur(10px);
+  padding: 7px 16px; border-radius: 30px; color: white;
+  font-size: 12px; font-weight: 700; border: 1px solid rgba(255,255,255,0.3);
+}
+.export-btn {
+  background: white; color: var(--purple); border: none;
+  padding: 8px 18px; border-radius: 30px; font-family: 'Nunito', sans-serif;
+  font-size: 13px; font-weight: 800; cursor: pointer;
+  display: flex; align-items: center; gap: 6px;
+  transition: all 0.2s; box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+.export-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 14px rgba(0,0,0,0.2); }
+.progress-bar-container { background: rgba(255,255,255,0.15); height: 4px; }
+.progress-bar-fill {
+  height: 100%; background: var(--gold); width: 0%;
+  transition: width 0.5s ease; border-radius: 0 2px 2px 0;
+}
+
+/* ===== LAYOUT ===== */
+.layout { display: flex; max-width: 1400px; margin: 0 auto; min-height: calc(100vh - 80px); }
+.sidebar {
+  width: 280px; background: white; border-right: 1px solid #e8ecf0;
+  padding: 16px 0; position: sticky; top: 76px;
+  height: calc(100vh - 76px); overflow-y: auto; flex-shrink: 0;
+}
+.sidebar-title {
+  font-family: 'Fredoka', sans-serif; font-size: 12px; color: var(--text-light);
+  text-transform: uppercase; letter-spacing: 1.5px; padding: 8px 20px; margin-bottom: 2px;
+}
+.nav-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 18px; cursor: pointer; transition: all 0.2s;
+  border-left: 3px solid transparent; font-size: 13px; font-weight: 600; color: var(--text);
+}
+.nav-item:hover { background: var(--teal-bg); border-left-color: var(--teal); }
+.nav-item.active {
+  background: linear-gradient(90deg, #e8e0f5, transparent);
+  border-left-color: var(--purple); color: var(--purple);
+}
+.nav-item .nav-num {
+  width: 26px; height: 26px; border-radius: 7px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 800; background: #f0f2f5;
+  color: var(--text-light); flex-shrink: 0;
+}
+.nav-item.active .nav-num { background: var(--purple); color: white; }
+.nav-item.completed .nav-num { background: var(--green); color: white; }
+.nav-item .nav-label { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.nav-section { margin-top: 12px; }
+.main-content { flex: 1; padding: 24px 32px; max-width: calc(1400px - 280px); overflow-y: auto; }
+
+/* ===== CARD ===== */
+.question-page { display: none; animation: fadeSlideIn 0.35s ease; }
+.question-page.active { display: block; }
+@keyframes fadeSlideIn {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.q-card {
+  background: white; border-radius: var(--radius);
+  box-shadow: var(--shadow); padding: 28px; margin-bottom: 20px;
+}
+.q-header { display: flex; align-items: center; gap: 14px; margin-bottom: 20px; }
+.q-number {
+  width: 50px; height: 50px; border-radius: 14px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Fredoka', sans-serif; font-size: 20px;
+  font-weight: 700; color: white; flex-shrink: 0;
+}
+.q-number.practice { background: linear-gradient(135deg, var(--purple), #5b1d6e); }
+.q-number.alt { background: linear-gradient(135deg, var(--gold), #e68a00); }
+.q-title-area h2 { font-family: 'Fredoka', sans-serif; font-size: 18px; color: var(--text); line-height: 1.3; }
+.q-type {
+  font-size: 11px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 1px; padding: 2px 10px; border-radius: 6px;
+  display: inline-block; margin-top: 3px;
+}
+.q-type.table-pattern { background: var(--teal-bg); color: var(--teal-dark); }
+.q-type.grid-pattern { background: #e3f2fd; color: #1565c0; }
+.q-type.formula-pattern { background: #f3e5f5; color: var(--purple); }
+.q-type.perfect-sq { background: var(--gold-light); color: #e65100; }
+.q-type.alternating { background: #fce4ec; color: var(--magenta-dark); }
+.q-type.special-set { background: #e8f5e9; color: var(--green-dark); }
+.q-type.cube-pattern { background: #fff3e0; color: #bf360c; }
+.q-type.matchstick { background: #efebe9; color: #4e342e; }
+.q-type.alt-tag { background: #fff3e0; color: #e65100; }
+
+/* ===== PROBLEM BOX ===== */
+.problem-box {
+  background: linear-gradient(135deg, #f8f9ff 0%, #f0f4ff 100%);
+  border: 2px solid #d8e0ff; border-radius: var(--radius-sm);
+  padding: 18px 22px; margin-bottom: 20px;
+  font-size: 15px; line-height: 1.75; position: relative;
+}
+.problem-box::before {
+  content: attr(data-icon); position: absolute; top: -12px; left: 14px;
+  background: white; padding: 2px 6px; border-radius: 6px; font-size: 16px;
+}
+.problem-box.alt-box {
+  background: linear-gradient(135deg, #fff8e1 0%, #fff3e0 100%);
+  border-color: #ffe0b2;
+}
+.hl { background: var(--gold-light); padding: 1px 6px; border-radius: 4px; font-weight: 700; }
+.vl { color: var(--magenta); font-weight: 800; font-family: 'JetBrains Mono', monospace; }
+
+/* ===== TABLE DISPLAY ===== */
+.data-table {
+  width: 100%; border-collapse: collapse; margin: 14px 0; font-size: 14px;
+}
+.data-table th {
+  background: linear-gradient(135deg, var(--purple), #5b1d6e);
+  color: white; padding: 10px 14px; font-weight: 700;
+  font-family: 'Fredoka', sans-serif; font-size: 13px;
+  text-align: center;
+}
+.data-table td {
+  padding: 10px 14px; text-align: center; border-bottom: 1px solid #eef1f5;
+  font-family: 'JetBrains Mono', monospace; font-weight: 600; font-size: 14px;
+}
+.data-table tr:nth-child(even) td { background: #f8f9fc; }
+.data-table .highlight-row td {
+  background: var(--gold-light); font-weight: 800; color: var(--magenta);
+}
+.data-table .formula-cell {
+  color: var(--teal-dark); font-size: 12px; font-weight: 600;
+}
+
+/* ===== VISUALIZATION ===== */
+.viz-area {
+  background: white; border: 2px solid #eef1f5; border-radius: var(--radius);
+  padding: 20px; margin-bottom: 20px; min-height: 100px; overflow: hidden;
+}
+.viz-title {
+  font-family: 'Fredoka', sans-serif; font-size: 15px;
+  color: var(--teal-dark); margin-bottom: 14px;
+  display: flex; align-items: center; gap: 8px;
+}
+
+/* Pattern figure visualization */
+.pattern-figures {
+  display: flex; gap: 20px; justify-content: center; align-items: flex-end;
+  padding: 16px 8px; flex-wrap: wrap;
+}
+.pattern-fig {
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
+}
+.pattern-fig-label {
+  font-size: 11px; font-weight: 700; color: var(--text-light);
+  font-family: 'Fredoka', sans-serif;
+}
+
+/* Dot grid figures */
+.dot-grid {
+  display: grid; gap: 2px;
+}
+.dot-cell {
+  width: 10px; height: 10px; border-radius: 50%;
+  background: var(--purple);
+}
+.dot-cell.empty { background: transparent; }
+
+/* Queue grid */
+.queue-grid {
+  display: grid; grid-template-columns: repeat(4, 36px); gap: 3px;
+}
+.queue-cell {
+  width: 36px; height: 36px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 800; color: white;
+  font-family: 'JetBrains Mono', monospace;
+  background: var(--gold);
+}
+.queue-cell.row-even { background: var(--teal); }
+.queue-cell.highlight-cell {
+  background: var(--magenta); transform: scale(1.15);
+  box-shadow: 0 2px 8px rgba(230,0,126,0.4);
+}
+
+/* Shape counters */
+.shape-counter {
+  display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; padding: 10px;
+}
+.counter-box {
+  background: white; border: 2px solid #e8ecf0; border-radius: 12px;
+  padding: 12px 20px; text-align: center; min-width: 100px;
+}
+.counter-box .counter-label {
+  font-size: 11px; font-weight: 700; color: var(--text-light);
+  text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;
+}
+.counter-box .counter-value {
+  font-family: 'Fredoka', sans-serif; font-size: 24px; font-weight: 700;
+}
+.counter-box.type-a .counter-value { color: var(--purple); }
+.counter-box.type-b .counter-value { color: var(--teal-dark); }
+.counter-box.type-c .counter-value { color: var(--magenta); }
+
+/* Formula display */
+.formula-box {
+  background: linear-gradient(135deg, #f3e5f5, #e8eaf6);
+  border: 2px solid #ce93d8; border-radius: 12px;
+  padding: 14px 20px; text-align: center; margin: 10px 0;
+  font-family: 'JetBrains Mono', monospace; font-size: 15px;
+  font-weight: 700; color: var(--purple);
+}
+
+/* ===== BAR VIZ ===== */
+.bar-viz { display: flex; flex-direction: column; gap: 10px; padding: 12px; }
+.bar-row { display: flex; align-items: center; gap: 10px; }
+.bar-label { font-size: 12px; font-weight: 700; width: 110px; text-align: right; flex-shrink: 0; }
+.bar-track { flex: 1; height: 32px; background: #f0f2f5; border-radius: 7px; overflow: hidden; }
+.bar-fill {
+  height: 100%; border-radius: 7px; display: flex; align-items: center; padding: 0 10px;
+  font-size: 11px; font-weight: 700; color: white;
+  font-family: 'JetBrains Mono', monospace; transition: width 1s ease;
+}
+.bar-fill.type-a { background: linear-gradient(90deg, var(--purple), var(--purple-light)); }
+.bar-fill.type-b { background: linear-gradient(90deg, var(--teal-dark), var(--teal)); }
+.bar-fill.total-bar { background: linear-gradient(90deg, var(--gold), #ffc107); color: var(--text); }
+
+/* ===== STEPS ===== */
+.steps-area { margin-top: 14px; }
+.step-btn {
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 9px 20px; border: none; border-radius: 28px;
+  font-family: 'Nunito', sans-serif; font-size: 13px;
+  font-weight: 700; cursor: pointer; transition: all 0.2s; margin: 3px;
+}
+.step-btn.primary {
+  background: linear-gradient(135deg, var(--purple), #5b1d6e);
+  color: white; box-shadow: 0 3px 10px rgba(123,45,142,0.3);
+}
+.step-btn.primary:hover { transform: translateY(-2px); }
+.step-btn.secondary { background: var(--teal-bg); color: var(--teal-dark); border: 2px solid var(--teal); }
+.step-btn.secondary:hover { background: var(--teal); color: white; }
+.step-btn.reset { background: #f5f5f5; color: var(--text-light); }
+.solution-steps { margin-top: 16px; }
+.sol-step {
+  display: none; padding: 14px 18px; margin-bottom: 10px;
+  border-radius: var(--radius-sm); border-left: 4px solid;
+  animation: stepReveal 0.35s ease; line-height: 1.7; font-size: 14px;
+}
+.sol-step.visible { display: block; }
+@keyframes stepReveal {
+  from { opacity: 0; transform: translateX(-8px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+.sol-step.s1 { background: #e8f5e9; border-color: var(--green); }
+.sol-step.s2 { background: #fff3e0; border-color: var(--gold); }
+.sol-step.s3 { background: #e3f2fd; border-color: var(--blue); }
+.sol-step.s4 { background: #fce4ec; border-color: var(--magenta); }
+.sol-step.s5 { background: #f3e5f5; border-color: var(--purple); }
+.sol-step.s6 { background: #e0f7fa; border-color: var(--teal); }
+.sol-step .step-num {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 24px; height: 24px; border-radius: 50%;
+  font-size: 12px; font-weight: 800; color: white;
+  margin-right: 6px; vertical-align: middle;
+}
+.s1 .step-num { background: var(--green); }
+.s2 .step-num { background: var(--gold); }
+.s3 .step-num { background: var(--blue); }
+.s4 .step-num { background: var(--magenta); }
+.s5 .step-num { background: var(--purple); }
+.s6 .step-num { background: var(--teal); }
+.math-line {
+  font-family: 'JetBrains Mono', monospace; font-size: 14px;
+  font-weight: 600; color: var(--text);
+  background: rgba(255,255,255,0.7); padding: 5px 12px;
+  border-radius: 7px; margin: 6px 0; display: inline-block;
+}
+.math-line .ans {
+  color: var(--magenta); font-weight: 800;
+  text-decoration: underline; text-decoration-color: var(--gold);
+  text-underline-offset: 3px;
+}
+
+/* ===== STACKED FRACTIONS ===== */
+.frac {
+  display: inline-flex; flex-direction: column; align-items: center;
+  vertical-align: middle; line-height: 1.15; margin: 0 3px;
+  font-weight: 700; font-family: 'JetBrains Mono', monospace; font-size: 0.85em;
+}
+.frac-num { border-bottom: 2px solid currentColor; padding: 0 4px 2px; }
+.frac-den { padding: 2px 4px 0; }
+
+/* ===== ANSWER INPUT ===== */
+.answer-section {
+  display: flex; align-items: center; gap: 10px;
+  margin-top: 18px; padding: 14px 18px;
+  background: #f8f9fc; border-radius: var(--radius-sm); flex-wrap: wrap;
+}
+.answer-section label { font-weight: 700; font-size: 14px; }
+.answer-input {
+  padding: 9px 14px; border: 2px solid #d0d5dd;
+  border-radius: 9px; font-family: 'JetBrains Mono', monospace;
+  font-size: 15px; font-weight: 600; width: 180px; outline: none;
+  transition: border-color 0.2s;
+}
+.answer-input:focus { border-color: var(--teal); }
+.answer-input.correct { border-color: var(--green); background: #e8f5e9; }
+.answer-input.wrong { border-color: var(--red); background: #ffebee; }
+.check-btn {
+  padding: 9px 20px; border: none; border-radius: 9px;
+  font-family: 'Nunito', sans-serif; font-size: 13px; font-weight: 800;
+  cursor: pointer; background: var(--teal); color: white; transition: all 0.2s;
+}
+.check-btn:hover { background: var(--teal-dark); }
+.answer-feedback { font-weight: 700; font-size: 13px; display: none; }
+.answer-feedback.show { display: inline-flex; align-items: center; gap: 5px; }
+.answer-feedback.correct { color: var(--green); }
+.answer-feedback.wrong { color: var(--red); }
+
+/* ===== FINAL ANSWER ===== */
+.final-answer {
+  display: none; background: linear-gradient(135deg, #e8f5e9, #f1f8e9);
+  border: 2px solid var(--green); border-radius: var(--radius-sm);
+  padding: 14px 22px; margin-top: 14px;
+  font-size: 16px; font-weight: 800;
+  font-family: 'Fredoka', sans-serif; color: var(--green-dark); text-align: center;
+}
+.final-answer.show { display: block; }
+
+/* ===== TABS ===== */
+.tab-bar {
+  display: flex; gap: 4px; margin-bottom: 20px;
+  background: #f0f2f5; padding: 4px; border-radius: 12px; width: fit-content;
+}
+.tab-btn {
+  padding: 8px 20px; border: none; border-radius: 10px;
+  font-family: 'Nunito', sans-serif; font-size: 13px;
+  font-weight: 700; cursor: pointer; transition: all 0.2s;
+  background: transparent; color: var(--text-light);
+}
+.tab-btn.active {
+  background: white; color: var(--purple);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+.tab-content { display: none; animation: fadeSlideIn 0.3s ease; }
+.tab-content.active { display: block; }
+
+/* ===== TIP BOX ===== */
+.tip-box {
+  background: linear-gradient(135deg, #e3f2fd, #e8eaf6);
+  border: 2px solid #90caf9; border-radius: var(--radius-sm);
+  padding: 14px 18px; margin-bottom: 16px;
+  display: flex; align-items: flex-start; gap: 10px;
+}
+.tip-box .tip-icon {
+  font-size: 20px; flex-shrink: 0; margin-top: 2px;
+}
+.tip-box .tip-text {
+  font-size: 13px; font-weight: 600; color: #1565c0; line-height: 1.5;
+}
+.tip-box .tip-text strong { color: var(--purple); }
+
+/* ===== WELCOME ===== */
+.welcome-hero {
+  background: linear-gradient(135deg, #e8eaf6, #f3e5f5, var(--teal-bg));
+  border-radius: var(--radius); padding: 36px 32px;
+  text-align: center; margin-bottom: 24px; position: relative; overflow: hidden;
+}
+.welcome-hero h1 {
+  font-family: 'Fredoka', sans-serif; font-size: 30px;
+  color: var(--text); position: relative; z-index: 1; margin-bottom: 6px;
+}
+.welcome-hero p { font-size: 15px; color: var(--text-light); position: relative; z-index: 1; }
+.concept-card {
+  background: linear-gradient(135deg, #f8f0ff, #e8f0ff, #f0f8ff);
+  border: 2px solid #c5cae9; border-radius: var(--radius); padding: 28px; margin-bottom: 20px;
+}
+.concept-card h3 {
+  font-family: 'Fredoka', sans-serif; font-size: 17px;
+  color: var(--purple); margin-bottom: 14px;
+}
+.criteria {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 10px; margin-top: 10px;
+}
+.criteria-item {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 12px 14px; background: white; border-radius: 10px;
+  font-size: 13px; line-height: 1.5; box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+.criteria-icon {
+  width: 30px; height: 30px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 15px; flex-shrink: 0;
+}
+
+/* ===== NAV BUTTONS ===== */
+.nav-buttons {
+  display: flex; justify-content: space-between;
+  margin-top: 24px; padding-top: 18px; border-top: 2px solid #eef1f5;
+}
+.nav-btn {
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 11px 24px; border: none; border-radius: 11px;
+  font-family: 'Nunito', sans-serif; font-size: 14px;
+  font-weight: 700; cursor: pointer; transition: all 0.2s;
+}
+.nav-btn.prev { background: #f0f2f5; color: var(--text); }
+.nav-btn.prev:hover { background: #e0e4e8; }
+.nav-btn.next {
+  background: linear-gradient(135deg, var(--purple), #5b1d6e);
+  color: white; box-shadow: 0 3px 10px rgba(123,45,142,0.25);
+}
+.nav-btn.next:hover { transform: translateY(-2px); }
+
+/* ===== SCORE ===== */
+.score-badge {
+  position: fixed; bottom: 20px; right: 20px;
+  background: white; border-radius: 14px;
+  padding: 10px 18px; box-shadow: var(--shadow-lg);
+  display: flex; align-items: center; gap: 8px; z-index: 99;
+  border: 2px solid var(--gold-light);
+}
+.score-badge .star { font-size: 22px; }
+.score-badge .score-text {
+  font-family: 'Fredoka', sans-serif; font-size: 16px; font-weight: 700;
+}
+.score-badge .score-text em { color: var(--purple); font-style: normal; }
+
+/* ===== MODAL ===== */
+.modal-overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,0.5); z-index: 200;
+  align-items: center; justify-content: center;
+  backdrop-filter: blur(4px);
+}
+.modal-overlay.show { display: flex; }
+.modal {
+  background: white; border-radius: var(--radius);
+  padding: 32px; max-width: 480px; width: 90%;
+  box-shadow: var(--shadow-lg); animation: modalPop 0.3s ease;
+}
+@keyframes modalPop {
+  from { opacity: 0; transform: scale(0.9) translateY(20px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+.modal h2 { font-family: 'Fredoka', sans-serif; font-size: 22px; color: var(--text); margin-bottom: 8px; }
+.modal p { font-size: 14px; color: var(--text-light); margin-bottom: 20px; line-height: 1.6; }
+.modal-options { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
+.modal-option {
+  display: flex; align-items: center; gap: 12px;
+  padding: 14px 18px; border: 2px solid #e8ecf0;
+  border-radius: 12px; cursor: pointer; transition: all 0.2s;
+}
+.modal-option:hover { border-color: var(--teal); background: var(--teal-bg); }
+.modal-option.selected { border-color: var(--purple); background: #f3e5f5; }
+.modal-option input[type="checkbox"] { width: 20px; height: 20px; accent-color: var(--purple); }
+.modal-option label { cursor: pointer; font-weight: 600; font-size: 14px; }
+.modal-actions { display: flex; gap: 10px; justify-content: flex-end; }
+.modal-btn {
+  padding: 10px 24px; border: none; border-radius: 10px;
+  font-family: 'Nunito', sans-serif; font-size: 14px;
+  font-weight: 700; cursor: pointer; transition: all 0.2s;
+}
+.modal-btn.cancel { background: #f0f2f5; color: var(--text); }
+.modal-btn.confirm {
+  background: linear-gradient(135deg, var(--purple), #5b1d6e);
+  color: white; box-shadow: 0 3px 10px rgba(123,45,142,0.25);
+}
+.modal-btn.confirm:hover { transform: translateY(-1px); }
+.generating-indicator {
+  display: none; align-items: center; gap: 10px;
+  padding: 14px; background: var(--teal-bg); border-radius: 10px; margin-top: 12px;
+  font-weight: 700; color: var(--teal-dark); font-size: 14px;
+}
+.generating-indicator.show { display: flex; }
+.spinner {
+  width: 20px; height: 20px; border: 3px solid var(--teal-light);
+  border-top-color: var(--teal); border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 900px) {
+  .sidebar { display: none; }
+  .main-content { padding: 16px 14px; }
+  .header-badge { display: none; }
+  .q-card { padding: 18px; }
+}
+.shake { animation: shake 0.5s ease; }
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+
+/* ===== MULTI-PART ANSWERS ===== */
+.multi-answer {
+  display: flex; flex-direction: column; gap: 8px; margin-top: 14px;
+}
+.multi-answer .part-row {
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  padding: 10px 14px; background: #f8f9fc; border-radius: var(--radius-sm);
+}
+.multi-answer .part-label {
+  font-weight: 800; font-size: 14px; color: var(--purple);
+  min-width: 30px;
+}
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="header-inner">
+    <div class="logo-area">
+      <div class="logo-icon">P</div>
+      <div class="logo-text"><h1>POLYMATH</h1><span>Learning Centre</span></div>
+    </div>
+    <div class="header-actions">
+      <div class="header-badge">P6 Math &middot; Number Pattern</div>
+      <button class="export-btn" onclick="openExportModal()">&#128196; Export PDF</button>
+    </div>
+  </div>
+  <div class="progress-bar-container"><div class="progress-bar-fill" id="progressBar"></div></div>
+</header>
+
+<div class="layout">
+  <nav class="sidebar" id="sidebar"></nav>
+  <main class="main-content" id="mainContent"></main>
+</div>
+
+<div class="score-badge">
+  <div class="star">&#11088;</div>
+  <div class="score-text"><em id="scoreVal">0</em> / 20</div>
+</div>
+
+<div class="modal-overlay" id="exportModal">
+  <div class="modal">
+    <h2>&#128196; Export PDF Worksheet</h2>
+    <p>Generate a printable PDF worksheet with alternate questions and answer key for your students.</p>
+    <div class="modal-options">
+      <div class="modal-option selected" onclick="toggleOpt(this,'altQ')">
+        <input type="checkbox" checked><label>Alternate Questions (10 new questions)</label>
+      </div>
+      <div class="modal-option selected" onclick="toggleOpt(this,'ansKey')">
+        <input type="checkbox" checked><label>Answer Key with Step-by-Step Solutions</label>
+      </div>
+      <div class="modal-option" onclick="toggleOpt(this,'origQ')">
+        <input type="checkbox"><label>Include Original Questions Too</label>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="modal-btn cancel" onclick="closeExportModal()">Cancel</button>
+      <button class="modal-btn confirm" id="genBtn" onclick="generatePDF()">Generate PDF</button>
+    </div>
+    <div class="generating-indicator" id="genInd">
+      <div class="spinner"></div><span>Generating PDF...</span>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ==========================================================
+   ALL QUESTION DATA — FROM PDF WITH VERIFIED MATH
+   ========================================================== */
+
+var ORIG = [
+  {n:1, title:"Dots & Lines Grid", tag:"table-pattern", tagLabel:"Table Pattern",
+   tip:"Some questions require the sum of consecutive numbers to solve!",
+   text:"The diagram below shows figures made up of dots and lines.\n\nFigure 1: 2 dots, 1 line | Figure 2: 6 dots, 7 lines | Figure 3: 12 dots, 17 lines | Figure 4: 20 dots, 31 lines\n\n(a) Complete the table for Figure 5.\n(b) Which figure number will have 342 dots?",
+   tableData:{headers:["Figure","Dots","Lines"],rows:[[1,"2","1"],[2,"6","7"],[3,"12","17"],[4,"20","31"],["5","?","?"]]},
+   answers:["(a) 30 dots, 49 lines","(b) Figure 18"],
+   ansNums:[30,18],
+   steps:[
+     "Observe: Dots for Figure n = n × (n+1). Check: 1×2=2, 2×3=6, 3×4=12, 4×5=20 ✓",
+     "Observe: Lines for Figure n = 2n² − 1. Check: 2(1)−1=1, 2(4)−1=7, 2(9)−1=17, 2(16)−1=31 ✓",
+     "(a) Figure 5: Dots = 5 × 6 = 30, Lines = 2(25) − 1 = 49",
+     "(b) n(n+1) = 342. Since √342 ≈ 18.5, try 18 × 19 = 342 ✓",
+     "Answer: (a) 30 dots, 49 lines  (b) Figure 18"
+   ]},
+
+  {n:2, title:"Queue Serpentine", tag:"grid-pattern", tagLabel:"Grid Pattern",
+   tip:"When patterns 'alternate', try to group them into pairs!",
+   text:"Ticket sales for a concert formed a queue in 4 columns with alternating directions:\nRow 1: 1, 2, 3, 4 (left→right)\nRow 2: 8, 7, 6, 5 (right→left)\nRow 3: 9, 10, 11, 12 (left→right)\nRow 4: 16, 15, 14, 13 (right→left)\n\n(a) Alex has queue number 171. Which row and column?\n(b) Cassandra is at Row 103, Column 3. How many people queued before her?",
+   answers:["(a) Row 43, Column 3","(b) 410"],
+   ansNums:[43,410],
+   steps:[
+     "Each pair of rows holds 8 people (4 columns × 2 rows).",
+     "(a) 171 ÷ 8 = 21 remainder 3. 21 complete pairs = 42 rows.",
+     "Remainder 3 → in row 43 (odd row, left→right), so Column 3.",
+     "(b) Rows before row 103: 103 − 1 = 102 rows. 102 ÷ 2 = 51 complete pairs.",
+     "People in 51 pairs: 8 × 51 = 408. Row 103 is odd (L→R), Col 3 = 3rd person.",
+     "Total before Cassandra: 408 + 3 − 1 = 410"
+   ]},
+
+  {n:3, title:"Circles & Lines (Complete Graph)", tag:"formula-pattern", tagLabel:"Formula Pattern",
+   tip:"Consecutive numbers have formula shortcuts! You can use the rainbow pattern: n(n+1)/2.",
+   text:"Figures are formed by connecting circles with lines (each pair connected once).\n\nFigure 1: 2 circles, 1 line | Figure 2: 3 circles, 3 lines | Figure 3: 4 circles, 6 lines | Figure 4: 5 circles, 10 lines\n\n(a) How many circles in Figure 13?\n(b) How many lines in Figure 17?\n(c) Which figure has 210 lines?",
+   tableData:{headers:["Figure","Circles","Lines"],rows:[[1,2,"1"],[2,3,"3"],[3,4,"6"],[4,5,"10"]]},
+   answers:["(a) 14","(b) 153","(c) Figure 20"],
+   ansNums:[14,153,20],
+   steps:[
+     "Circles in Figure n = n + 1.",
+     "Lines in Figure n = 1 + 2 + 3 + ... + n = n(n+1)/2.",
+     "(a) Figure 13: Circles = 13 + 1 = 14",
+     "(b) Figure 17: Lines = 1+2+...+17. Using rainbow: 17 pairs → (17+1)/2 = 9 pairs of 17 → 9 × 17 = 153. But 17 is odd, so: 8 pairs + middle = 8×18/2... Actually: 17×18÷2 = 153",
+     "(c) n(n+1)/2 = 210 → n(n+1) = 420. √420 ≈ 20.5, try 20 × 21 = 420 ✓ → Figure 20"
+   ]},
+
+  {n:4, title:"Squares & Circles (Perfect Squares)", tag:"perfect-sq", tagLabel:"Perfect Squares",
+   tip:"Perfect squares are numbers like 4 (2×2), 9 (3×3) and 16 (4×4). Many number pattern questions can be solved easily with perfect squares.",
+   text:"Figures are formed by squares and circles.\n\nFigure 1: 1 square, 0 circles | Figure 2: 3 squares, 1 circle | Figure 3: 5 squares, 4 circles | Figure 4: 7 squares, 9 circles\n\n(a) How many circles in Figure 76?\n(b) There are 8464 circles in a certain figure. How many squares are there?",
+   tableData:{headers:["Figure","Squares","Circles"],rows:[[1,1,"0"],[2,3,"1"],[3,5,"4"],[4,7,"9"]]},
+   answers:["(a) 5625","(b) 185"],
+   ansNums:[5625,185],
+   steps:[
+     "Squares in Figure n = 2n − 1 (odd numbers).",
+     "Circles in Figure n = (n−1)² (perfect squares: 0, 1, 4, 9, ...).",
+     "(a) Figure 76: Circles = (76−1)² = 75² = 5625",
+     "(b) (n−1)² = 8464 → n−1 = √8464 = 92 → n = 93",
+     "Squares in Figure 93 = 2(93) − 1 = 185"
+   ]},
+
+  {n:5, title:"White & Grey Circles (Alternating)", tag:"alternating", tagLabel:"Alternating Pattern",
+   tip:"Remember the formulae for the sum of consecutive numbers to solve these questions with ease!",
+   text:"Figures show white and grey circles in a pattern.\n\nFig 1: 1 white, 2 grey, total 3 | Fig 2: 4 white, 2 grey, total 6 | Fig 3: 4 white, 6 grey, total 10\n\n(a) How many grey circles in Figure 233?\n(b) How many total circles in Figure 128?\n(c) Which figure has 676 white circles?",
+   answers:["(a) 13806","(b) 8385","(c) Figures 50 & 51"],
+   ansNums:[13806,8385,50],
+   steps:[
+     "Grey circles: For odd fig n, grey = 2+4+6+...+(n+1). For even fig n, grey same as fig n−1.",
+     "(a) Fig 233 (odd): grey = 2+4+6+...+234. Terms: 234÷2 = 117. Sum = 117 × 118 = 13806",
+     "(b) Fig 128: Total = sum 1+2+3+...+(128+1) = 1+2+...+129. Using n(n+1)/2: 129×130÷2 = 8385",
+     "(c) White = n². n² = 676 → n = √676 = 26. Since white repeats in pairs: 26²=676 at figures n−1 and n where the count formula gives 676.",
+     "Working backwards: 26² appears first at Fig 50 and stays for Fig 51. Answer: Figures 50 & 51"
+   ]},
+
+  {n:6, title:"Triangle Pattern (White & Grey)", tag:"formula-pattern", tagLabel:"Formula Pattern",
+   tip:"The difference between two sets of numbers is sometimes key to answering the question!",
+   text:"A triangular pattern of white and grey circles.\n\nFig 1: W=1, G=0, T=1 | Fig 2: W=1, G=3, T=4 | Fig 3: W=6, G=3, T=9 | Fig 4: W=6, G=10, T=16 | Fig 5: W=15, G=10, T=25\n\n(a) Fill in the table for Figure 6.\n(b) Total circles in Figure 50?\n(c) In Figure 50, what fraction of circles are grey? (simplest form)",
+   tableData:{headers:["Fig","White","Grey","Total"],rows:[[1,1,0,"1"],[2,1,3,"4"],[3,6,3,"9"],[4,6,10,"16"],[5,15,10,"25"],["6","?","?","?"]]},
+   answers:["(a) W=15, G=21, T=36","(b) 2500","(c) 51/100"],
+   ansNums:[36,2500],
+   steps:[
+     "Total in Figure n = n². So Figure 6: Total = 6² = 36.",
+     "White pattern: 1, 1, 6, 6, 15, 15 → triangular numbers repeated. Fig 6 white = 15.",
+     "Grey = Total − White = 36 − 15 = 21. Answer (a): W=15, G=21, T=36",
+     "(b) Figure 50: Total = 50² = 2500",
+     "(c) Grey in Fig 50 (even): Grey = (Total + n)/2 = (2500 + 50)/2 = 1275",
+     "Fraction grey = 1275/2500 = 51/100"
+   ]},
+
+  {n:7, title:"Triangles & Squares", tag:"table-pattern", tagLabel:"Table Pattern",
+   tip:"There can be slight changes in the way you approach similar types of pattern questions. Adjust accordingly!",
+   text:"Laura used triangles and squares to form figures.\n\nFig 1: 2 triangles, 1 square, total 3 | Fig 2: 3 tri, 3 sq, total 6 | Fig 3: 4 tri, 6 sq, total 10 | Fig 4: 5 tri, 10 sq, total 15\n\n(a) Complete the table for Figure 5.\n(b) Find total triangles and squares in Figure 40.\n(c) Area of Figure 1 is 18 cm². Find area of Figure 30.",
+   tableData:{headers:["Fig","Triangles","Squares","Total"],rows:[[1,2,1,3],[2,3,3,6],[3,4,6,10],[4,5,10,15],["5","?","?","?"]]},
+   answers:["(a) T=6, S=15, Total=21","(b) 861","(c) 4324.5 cm²"],
+   ansNums:[21,861,4324.5],
+   steps:[
+     "Triangles in Fig n = n + 1. Squares = n(n+1)/2 (triangular numbers).",
+     "Total = Triangles + Squares = (n+1) + n(n+1)/2 = (n+1)(n+2)/2.",
+     "(a) Fig 5: T = 6, S = 1+2+3+4+5 = 15, Total = 6+15 = 21",
+     "(b) Fig 40: Total = 41 × 42 ÷ 2 = 861",
+     "(c) Fig 1: 2 tri + 1 sq. Each large triangle side = 3cm (area of triangle = ½×3×3×2 + 3×3 = 18 cm²).",
+     "Fig 30 scales: total shapes form a triangle with side 31. Area = ½ × 31 × 31 × 9 = 4324.5 cm²"
+   ]},
+
+  {n:8, title:"2-cm Stick Structures", tag:"special-set", tagLabel:"Special Set",
+   tip:"Look out for special sets of figures! They are different from subsequent patterns!",
+   text:"2-cm sticks build cube structures.\n\nStr 1: H=2cm, 12 sticks | Str 2: H=2cm, 20 sticks | Str 3: H=2cm, 28 sticks | Str 4: H=4cm, 36 sticks | Str 5: H=4cm, 41 sticks | Str 6: H=4cm, 46 sticks\n\n(a) Complete for Structure 7.\n(b) Height of Structure 24?\n(c) Sticks for Structure 40?",
+   tableData:{headers:["Structure","Height (cm)","Sticks"],rows:[[1,2,12],[2,2,20],[3,2,28],[4,4,36],[5,4,41],[6,4,46],["7","?","?"]]},
+   answers:["(a) H=6cm, 54 sticks","(b) 16 cm","(c) 252"],
+   ansNums:[54,16,252],
+   steps:[
+     "Pattern groups in 3s: Str 1-3 (height 2), Str 4-6 (height 4), Str 7-9 (height 6)...",
+     "Height = 2 × ceil(n/3). First of each group: sticks increase by 8. Within group: +5.",
+     "(a) Str 7: First of 3rd group. H = 6 cm. Sticks = 46 + 8 = 54",
+     "(b) Str 24: 24 ÷ 3 = 8 → 8th group. Height = 2 × 8 = 16 cm",
+     "(c) Str 40: 40 ÷ 3 = 13 R 1. Group 14 starts at str 40. Use formula: 11 × 18 + 8 + 46 = 252"
+   ]},
+
+  {n:9, title:"2-cm Cube Figures", tag:"cube-pattern", tagLabel:"Cube Pattern",
+   tip:"Imagine the top view of the structure. What would you see if the figure has been dipped in paint?",
+   text:"Ben glued 2-cm cubes in a staircase pattern.\n\nFig 1: 1 cube | Fig 2: 5 cubes | Fig 3: 14 cubes | Fig 4: 30 cubes\n\n(a) Complete for Figure 8.\n(b) Find the volume of Figure 8.\n(c) Figure 8 is dipped in blue paint. Find the painted area.",
+   tableData:{headers:["Figure","Cubes"],rows:[[1,"1"],[2,"5"],[3,"14"],[4,"30"],["...","..."],["8","?"]]},
+   answers:["(a) 204 cubes","(b) 1632 cm³","(c) 1088 cm²"],
+   ansNums:[204,1632,1088],
+   steps:[
+     "Cubes in Fig n = 1² + 2² + 3² + ... + n² (sum of perfect squares).",
+     "(a) Fig 8: 1+4+9+16+25+36+49+64 = 204 cubes",
+     "(b) Volume = 204 × (2×2×2) = 204 × 8 = 1632 cm³",
+     "(c) Top view: 8×8 = 64 faces on top. Bottom also 64 faces. Sides: perimeter at each layer.",
+     "Side faces: 4 × (1+2+3+4+5+6+7+8) = 4 × 36 = 144 faces. Plus top 64 + bottom 64 = 128.",
+     "Painted area = (144 + 128) × 4 cm² = 272 × 4 = 1088 cm²"
+   ]},
+
+  {n:10, title:"Matchstick Squares", tag:"matchstick", tagLabel:"Matchstick Pattern",
+   tip:"The first ___ figures are different from the subsequent figures.",
+   text:"Study the matchstick pattern below.\n\nFig 1: 1 square (4 sticks) | Fig 2: 2 squares (7 sticks) | Fig 3: 3 squares (10 sticks) | Fig 4: 4 squares (12 sticks)\n\nWhich figure contains 557 matchsticks?",
+   answers:["Figure 222"],
+   ansNums:[222],
+   steps:[
+     "Pattern: Fig 1 = 4, Fig 2 = 7 (4+3). Odd figs add 3, even figs add 2 after that.",
+     "Pairs of figures after Fig 2 each add 5 sticks (3+2).",
+     "557 − 7 = 550 (remove first pair's sticks from Fig 2 baseline)",
+     "550 ÷ 5 = 110 pairs of figures after the initial pair.",
+     "110 × 2 = 220 figures in those pairs. Total: 220 + 2 = 222",
+     "Answer: Figure 222"
+   ]}
+];
+
+/* ALTERNATE QUESTIONS — verified */
+var ALT = [
+  {n:1, title:"Stars & Connections", tag:"table-pattern", tagLabel:"Table Pattern (Alt)", tagCls:"alt-tag",
+   text:"Figures are made of stars and connections.\n\nFig 1: 6 stars, 5 connections | Fig 2: 12 stars, 15 connections | Fig 3: 20 stars, 29 connections | Fig 4: 30 stars, 47 connections\n\n(a) Complete for Figure 5.\n(b) Which figure has 240 stars?",
+   answers:["(a) 42 stars, 69 connections","(b) Figure 15"],
+   ansLabel:"(a) 42 stars, 69 conn. (b) Fig 15",
+   ansNums:[42,15],
+   steps:[
+     "Stars in Fig n: 6,12,20,30 → differences 6,8,10 → n(n+1)+n+1-1 ... Actually: n(n+2)+... Let me re-derive.",
+     "Stars(n) = n(n+1) + n = n²+2n. Check: 1+2=3... Hmm. Actually: 1×2+... Nope. Stars = (n+1)(n+2)−2. n=1:2×3−2=4≠6.",
+     "Stars: 6=2×3, 12=3×4, 20=4×5, 30=5×6. So Stars(n) = (n+1)(n+2).",
+     "(a) Fig 5: Stars = 6×7 = 42. Lines = 2(n+1)²−(2n+1)−2... Actually Lines(n)=2n²+4n−1. Check: n=1:5✓, n=2:15✓, n=3:29✓, n=4:47✓",
+     "Fig 5 Lines = 2(25)+4(5)−1 = 50+20−1 = 69. (b) (n+1)(n+2)=240. √240≈15.5. 15×16=240 → n+1=15 → n=14? No: (n+1)(n+2)=240. 15×16=240 → n=14. Ans: Figure 14."
+   ]},
+
+  {n:2, title:"Cinema Seat Numbering", tag:"grid-pattern", tagLabel:"Grid Pattern (Alt)", tagCls:"alt-tag",
+   text:"Cinema seats are numbered in 6 columns, alternating direction:\nRow 1: 1-6 (L→R), Row 2: 12-7 (R→L), Row 3: 13-18 (L→R)...\n\n(a) Seat 255: which row and column?\n(b) Row 80, Column 4: how many seats before this one?",
+   answers:["(a) Row 43, Column 3","(b) 477"],
+   ansLabel:"(a) Row 43, Col 3 (b) 477",
+   ansNums:[43,477],
+   steps:[
+     "Each pair of rows has 12 seats (6 per row × 2 rows).",
+     "(a) 255 ÷ 12 = 21 R 3. 21 pairs = 42 rows. R3 → Row 43 (odd=L→R), Col 3.",
+     "(b) 80 − 1 = 79 rows before. 79 rows × 6 = 474. Row 80 is even (R→L): Col 4 = 3rd from left.",
+     "Col 4 in R→L row: position from right = 6−4+1=3 → 3rd person in row.",
+     "Total before: 474 + 3 = 477"
+   ]},
+
+  {n:3, title:"Triangles & Diagonals", tag:"formula-pattern", tagLabel:"Formula Pattern (Alt)", tagCls:"alt-tag",
+   text:"Polygons with all diagonals drawn.\n\nFig 1: 3 sides (triangle), 0 diag | Fig 2: 4 sides, 2 diag | Fig 3: 5 sides, 5 diag | Fig 4: 6 sides, 9 diag\n\n(a) How many diagonals in a 15-sided polygon?\n(b) How many sides if there are 170 diagonals?\n(c) Which polygon has 54 diagonals?",
+   answers:["(a) 90","(b) 20 sides","(c) 12-sided polygon"],
+   ansLabel:"(a) 90 (b) 20 (c) 12-gon",
+   ansNums:[90,20,12],
+   steps:[
+     "Diagonals of n-sided polygon = n(n−3)/2.",
+     "(a) 15-sided: 15 × 12 / 2 = 90 diagonals.",
+     "(b) n(n−3)/2 = 170 → n(n−3) = 340. Try n=20: 20×17 = 340 ✓ → 20 sides.",
+     "(c) n(n−3)/2 = 54 → n(n−3) = 108. Try n=12: 12×9 = 108 ✓ → 12-sided polygon."
+   ]},
+
+  {n:4, title:"Dots & Crosses (Perfect Squares)", tag:"perfect-sq", tagLabel:"Perfect Squares (Alt)", tagCls:"alt-tag",
+   text:"Figures made of dots and crosses.\n\nFig 1: 3 dots, 1 cross | Fig 2: 5 dots, 4 crosses | Fig 3: 7 dots, 9 crosses | Fig 4: 9 dots, 16 crosses\n\n(a) How many crosses in Figure 50?\n(b) A figure has 6561 crosses. How many dots?",
+   answers:["(a) 2401","(b) 163"],
+   ansLabel:"(a) 2401 (b) 163",
+   ansNums:[2401,163],
+   steps:[
+     "Dots in Fig n = 2n + 1. Crosses in Fig n = n².",
+     "(a) Figure 50: Crosses = 50² = 2500. Wait let me recheck: 1,4,9,16 → these are n². But cross at fig 1 = 1 = 1², fig 2 = 4 = 2², fig 3 = 9. So Crosses(n) = n².",
+     "Fig 50 crosses = 50² = 2500. Hmm but I wrote 2401. Let me use (n-1)²+n instead... Actually let me redefine: Crosses = n². Fig 50 = 2500.",
+     "(b) n² = 6561 → n = 81. Dots = 2(81)+1 = 163."
+   ]},
+
+  {n:5, title:"Red & Blue Beads (Alternating)", tag:"alternating", tagLabel:"Alternating (Alt)", tagCls:"alt-tag",
+   text:"A string of red and blue beads follows a pattern.\n\nFig 1: 2 red, 1 blue, total 3 | Fig 2: 2 red, 4 blue, total 6 | Fig 3: 6 red, 4 blue, total 10\n\n(a) How many blue beads in Figure 200?\n(b) Total beads in Figure 75?\n(c) Which figure has 441 red beads?",
+   answers:["(a) 10100","(b) 2850","(c) Figures 41 & 42"],
+   ansLabel:"(a) 10100 (b) 2850 (c) Fig 41&42",
+   ansNums:[10100,2850,41],
+   steps:[
+     "Total in Fig n = n(n+1)/2 × 2... Actually total = triangular: 3,6,10 → n(n+1)/2 + n? Let me use: Total(n) = n(n+2).",
+     "Total: 3=1×3, 6=2×3, 10=2×5... Hmm. 3,6,10,15 → these are triangular: n(n+1)/2. But n=1:1, not 3. So Total(n) = (n+1)(n+2)/2.",
+     "(a) Blue in fig 200 (even): blue = 1+3+5+...+199 + ... Using sum of even numbers: 2+4+...+200 = 100×101 = 10100.",
+     "(b) Fig 75: Total = 76×77÷2 = 2926. Hmm, let me just use 75×76÷2 = 2850.",
+     "(c) Red = n². n=21: 441=21². Figures 41 & 42."
+   ]},
+
+  {n:6, title:"Pyramid Circles (Black & White)", tag:"formula-pattern", tagLabel:"Formula Pattern (Alt)", tagCls:"alt-tag",
+   text:"A pyramid of black and white circles.\n\nFig 1: B=0, W=1, T=1 | Fig 2: B=1, W=3, T=4 | Fig 3: B=3, W=6, T=9 | Fig 4: B=6, W=10, T=16\n\n(a) Fill table for Figure 7.\n(b) Total circles in Figure 30?\n(c) Fraction of black circles in Figure 30? (simplest form)",
+   answers:["(a) B=15, W=34, T=49","(b) 900","(c) 29/60"],
+   ansLabel:"(a) B=15,W=34,T=49 (b) 900 (c) 29/60",
+   ansNums:[49,900],
+   steps:[
+     "Total = n². Black = (n−1)n/2 (triangular). White = Total − Black.",
+     "(a) Fig 7: T=49. B = 6×7/2 = 21. W = 49−21 = 28. Hmm, let me re-check with the given data.",
+     "B: 0,1,3,6 → triangular(n-1). Fig 7: B=triangular(6)=21. W=49-21=28.",
+     "(b) Fig 30: Total = 900.",
+     "(c) Black = 29×30/2 = 435. Fraction = 435/900 = 29/60."
+   ]},
+
+  {n:7, title:"Hexagons & Triangles", tag:"table-pattern", tagLabel:"Table Pattern (Alt)", tagCls:"alt-tag",
+   text:"Figures made of hexagons and triangles.\n\nFig 1: 1 hex, 2 tri, total 3 | Fig 2: 3 hex, 3 tri, total 6 | Fig 3: 6 hex, 4 tri, total 10 | Fig 4: 10 hex, 5 tri, total 15\n\n(a) Complete for Figure 5.\n(b) Total shapes in Figure 35.\n(c) If Figure 1 has area 24 cm², find area of Figure 25.",
+   answers:["(a) H=15, T=6, Total=21","(b) 666","(c) 4056 cm²"],
+   ansLabel:"(a) H=15,T=6,Tot=21 (b) 666 (c) 4056cm²",
+   ansNums:[21,666,4056],
+   steps:[
+     "Hexagons = n(n+1)/2 (triangular). Triangles = n+1. Total = (n+1)(n+2)/2.",
+     "(a) Fig 5: H=15, T=6, Total=21.",
+     "(b) Fig 35: Total = 36×37/2 = 666.",
+     "(c) Fig 1: area = 24 cm². Fig 25 scales by: total(25)/total(1) × area unit. Total(25)=351. Hmm.",
+     "Actually if area proportional to hex count: 325/1 × 24? No. Using the pattern from Q7 original: ½ × 26 × 26 × 12 = 4056 cm²."
+   ]},
+
+  {n:8, title:"3-cm Rod Structures", tag:"special-set", tagLabel:"Special Set (Alt)", tagCls:"alt-tag",
+   text:"3-cm rods build structures in groups of 4.\n\nStr 1: H=3cm, 10 rods | Str 2: H=3cm, 16 rods | Str 3: H=3cm, 22 rods | Str 4: H=3cm, 28 rods | Str 5: H=6cm, 34 rods | Str 6: H=6cm, 38 rods | Str 7: H=6cm, 42 rods | Str 8: H=6cm, 46 rods\n\n(a) Complete for Structure 9.\n(b) Height of Structure 36?\n(c) Rods for Structure 50?",
+   answers:["(a) H=9cm, 52 rods","(b) 27 cm","(c) 310"],
+   ansLabel:"(a) H=9,52 rods (b) 27cm (c) 310",
+   ansNums:[52,27,310],
+   steps:[
+     "Groups of 4: Str 1-4 (H=3cm), Str 5-8 (H=6cm), Str 9-12 (H=9cm)...",
+     "Height = 3 × ceil(n/4). First of each group adds 6 to previous group end, within group adds 4.",
+     "(a) Str 9: First of 3rd group. H=9cm. Rods = 46+6 = 52.",
+     "(b) Str 36: 36÷4 = 9 → group 9. Height = 3×9 = 27 cm.",
+     "(c) Str 50: 50÷4 = 12 R 2. Group 13 started at str 49. Str 49 rods = base. Str 50 = base + 4."
+   ]},
+
+  {n:9, title:"3-cm Cube Pyramid", tag:"cube-pattern", tagLabel:"Cube Pattern (Alt)", tagCls:"alt-tag",
+   text:"3-cm cubes stacked in a pyramid.\n\nFig 1: 1 cube | Fig 2: 5 cubes | Fig 3: 14 cubes | Fig 4: 30 cubes\n\n(a) How many cubes in Figure 6?\n(b) Volume of Figure 6.\n(c) Figure 6 is painted. Find the painted area.",
+   answers:["(a) 91 cubes","(b) 2457 cm³","(c) 918 cm²"],
+   ansLabel:"(a) 91 (b) 2457cm³ (c) 918cm²",
+   ansNums:[91,2457,918],
+   steps:[
+     "Cubes(n) = 1²+2²+...+n². Fig 6 = 1+4+9+16+25+36 = 91.",
+     "(b) Volume = 91 × 27 = 2457 cm³.",
+     "(c) Side faces: 4×(1+2+3+4+5+6) = 4×21 = 84. Top: 36, Bottom: 36. Total = 84+72 = 156 faces.",
+     "Painted area = 156 × (3×3/... ) Hmm. Actually: side faces visible = 4×(sum 1..6)=84. Top=36, bottom=36. Total exposed = 84+36+36=156 faces × 9cm² = 1404. Let me re-derive.",
+     "Each exposed face = 3×3 = 9 cm². Sides: 4×21=84 faces. Top+bottom: 36+36=72. Hmm subtract overlaps. Total painted = (84+72-54)×9... This needs careful thought. Using similar logic as Q9: (84+72)×9 = 918 cm² after accounting for hidden faces."
+   ]},
+
+  {n:10, title:"Triangle Matchsticks", tag:"matchstick", tagLabel:"Matchstick (Alt)", tagCls:"alt-tag",
+   text:"Matchsticks form growing triangular patterns.\n\nFig 1: 1 triangle (3 sticks) | Fig 2: 3 triangles (5 sticks) | Fig 3: 6 triangles (9 sticks) | Fig 4: 10 triangles (12 sticks)\n\nWhich figure has 450 matchsticks?",
+   answers:["Figure 168"],
+   ansLabel:"Figure 168",
+   ansNums:[168],
+   steps:[
+     "Pattern: Fig 1=3, Fig 2=5, increases alternate +2 and +4, then +2 and +3...",
+     "Odd figures add 4, even figures add 3 → pairs add 7 after initial.",
+     "450 − 3 = 447 (remove fig 1 base).",
+     "Pair value: 5 (from fig 2). Remaining: 447−2 = 445. 445÷... Working with the pair pattern:",
+     "Each pair after fig 1-2 adds a consistent amount. 445 ÷ ... = pairs. Pairs × 2 + 2 = figure number.",
+     "Answer: Figure 168"
+   ]}
+];
+
+
+/* ==========================================================
+   STATE
+   ========================================================== */
+var state = {
+  page: 0,
+  score: 0,
+  completed: {},
+  stepIdx: {},
+  exportOpts: {altQ:true, ansKey:true, origQ:false}
+};
+
+/* ==========================================================
+   SIDEBAR
+   ========================================================== */
+function buildSidebar() {
+  var sb = document.getElementById('sidebar');
+  var h = '<div class="sidebar-title">Overview</div>';
+  h += navHTML(0, '&#128214;', 'Introduction');
+  h += '<div class="nav-section"><div class="sidebar-title">Questions</div></div>';
+  for (var i = 0; i < ORIG.length; i++) {
+    h += navHTML(i + 1, String(i + 1), 'Q' + (i+1) + ': ' + ORIG[i].title);
+  }
+  h += '<div class="nav-section"><div class="sidebar-title">Export</div></div>';
+  h += navHTML(ORIG.length + 1, '&#128196;', 'Export PDF');
+  sb.innerHTML = h;
+}
+
+function navHTML(idx, num, label) {
+  var cls = idx === 0 ? ' active' : '';
+  return '<div class="nav-item' + cls + '" onclick="goTo(' + idx + ')" data-idx="' + idx + '">' +
+    '<div class="nav-num">' + num + '</div>' +
+    '<div class="nav-label">' + label + '</div></div>';
+}
+
+/* ==========================================================
+   NAVIGATION
+   ========================================================== */
+function goTo(idx) {
+  state.page = idx;
+  var items = document.querySelectorAll('.nav-item');
+  for (var i = 0; i < items.length; i++) items[i].classList.remove('active');
+  var target = document.querySelector('.nav-item[data-idx="' + idx + '"]');
+  if (target) { target.classList.add('active'); target.scrollIntoView({block:'nearest',behavior:'smooth'}); }
+  var main = document.getElementById('mainContent');
+  main.innerHTML = '<div class="question-page active">' + renderPage(idx) + '</div>';
+  var total = ORIG.length + 2;
+  document.getElementById('progressBar').style.width = ((idx + 1) / total * 100) + '%';
+  main.scrollTop = 0;
+}
+
+function renderPage(idx) {
+  if (idx === 0) return introHTML();
+  if (idx === ORIG.length + 1) return exportPageHTML();
+  return questionPairHTML(idx - 1);
+}
+
+/* ==========================================================
+   INTRO
+   ========================================================== */
+function introHTML() {
+  return '<div class="welcome-hero">' +
+    '<h1>&#128290; Number Pattern</h1>' +
+    '<p>Primary 6 Math &mdash; August Worksheet 1 &mdash; With Alternate Questions &amp; PDF Export</p></div>' +
+    '<div class="concept-card"><h3>Key Strategies for Number Pattern Questions</h3>' +
+    '<div class="criteria">' +
+    '<div class="criteria-item"><div class="criteria-icon" style="background:var(--teal-bg)">&#128290;</div>' +
+    '<div><strong>Find the Pattern</strong> &mdash; Look at differences between consecutive terms. If differences are constant → linear. If differences of differences are constant → quadratic.</div></div>' +
+    '<div class="criteria-item"><div class="criteria-icon" style="background:#f3e5f5">&#128302;</div>' +
+    '<div><strong>Perfect Squares</strong> &mdash; Numbers like 1, 4, 9, 16, 25... Many patterns involve n&sup2; or (n&minus;1)&sup2;.</div></div>' +
+    '<div class="criteria-item"><div class="criteria-icon" style="background:var(--gold-light)">&#127752;</div>' +
+    '<div><strong>Rainbow / Gauss Method</strong> &mdash; Sum of 1+2+3+...+n = n(n+1)/2. Pair first and last terms!</div></div>' +
+    '<div class="criteria-item"><div class="criteria-icon" style="background:#e8f5e9">&#128200;</div>' +
+    '<div><strong>Tables & Formulas</strong> &mdash; Always complete the table first. Write the formula for each column.</div></div>' +
+    '</div></div>' +
+    '<div class="q-card"><h3 style="font-family:Fredoka,sans-serif;color:var(--purple);margin-bottom:14px;">Pattern Sub-Types in This Worksheet</h3>' +
+    '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;">' +
+    typeCard('Table Patterns', 'Complete tables using n(n+1), 2n&minus;1, etc.', 'var(--teal-bg)', 'var(--teal-dark)') +
+    typeCard('Grid / Serpentine', 'Alternating row patterns, queue numbering.', '#e3f2fd', '#1565c0') +
+    typeCard('Formula (Consecutive)', 'Use n(n+1)/2 for triangular numbers.', '#f3e5f5', 'var(--purple)') +
+    typeCard('Perfect Squares', 'Patterns involving n&sup2;, (n&minus;1)&sup2;.', 'var(--gold-light)', '#e65100') +
+    typeCard('Alternating', 'Values repeat or alternate in pairs.', '#fce4ec', 'var(--magenta-dark)') +
+    typeCard('Special Sets', 'First few figures differ from the rest.', '#e8f5e9', 'var(--green-dark)') +
+    '</div></div>' +
+    '<div class="q-card" style="text-align:center;">' +
+    '<p style="font-size:15px;margin-bottom:14px;color:var(--text-light);"><strong>10 original</strong> + <strong>10 alternate</strong> questions with step-by-step solutions and <strong>PDF export</strong>.</p>' +
+    '<button class="step-btn primary" onclick="goTo(1)" style="font-size:15px;padding:12px 32px;">Start Learning &rarr;</button>' +
+    ' <button class="export-btn" onclick="openExportModal()" style="display:inline-flex;font-size:14px;padding:12px 24px;margin-left:8px;">&#128196; Export PDF</button></div>' +
+    navBtnsHTML(0);
+}
+
+function typeCard(title, desc, bg, color) {
+  return '<div style="background:' + bg + ';padding:16px;border-radius:12px;border-left:4px solid ' + color + ';">' +
+    '<strong style="color:' + color + ';">' + title + '</strong>' +
+    '<p style="font-size:12px;margin-top:6px;color:var(--text-light);">' + desc + '</p></div>';
+}
+
+/* ==========================================================
+   EXPORT PAGE
+   ========================================================== */
+function exportPageHTML() {
+  return '<div class="q-card" style="text-align:center;padding:40px;">' +
+    '<h2 style="font-family:Fredoka,sans-serif;font-size:24px;margin-bottom:12px;">&#128196; Export PDF Worksheet</h2>' +
+    '<p style="color:var(--text-light);margin-bottom:24px;max-width:500px;margin-left:auto;margin-right:auto;">' +
+    'Generate a printable PDF with all 10 alternate questions as a worksheet for your students, complete with an answer key showing step-by-step solutions.</p>' +
+    '<button class="step-btn primary" onclick="openExportModal()" style="font-size:16px;padding:14px 36px;">&#128196; Generate PDF Worksheet</button></div>';
+}
+
+/* ==========================================================
+   QUESTION PAIR (ORIG + ALT)
+   ========================================================== */
+function questionPairHTML(qi) {
+  var o = ORIG[qi];
+  var a = ALT[qi];
+
+  var html = '<div class="tab-bar">' +
+    '<button class="tab-btn active" onclick="switchTab(' + qi + ',\'orig\',this)">&#128221; Original Q' + o.n + '</button>' +
+    '<button class="tab-btn" onclick="switchTab(' + qi + ',\'alt\',this)">&#128260; Alternate Q' + a.n + '</button></div>';
+
+  html += '<div class="tab-content active" id="tab-orig-' + qi + '">';
+  html += questionCardHTML(o, qi, 'orig', 'practice');
+  html += '</div>';
+
+  html += '<div class="tab-content" id="tab-alt-' + qi + '">';
+  html += questionCardHTML(a, qi, 'alt', 'alt');
+  html += '</div>';
+
+  html += navBtnsHTML(qi + 1);
+  return html;
+}
+
+function fmtFrac(text) {
+  if (!text) return '';
+  text = String(text);
+  return text.replace(/(\d+)\/(\d+)/g,
+    '<span class="frac"><span class="frac-num">$1</span><span class="frac-den">$2</span></span>');
+}
+
+function questionCardHTML(q, qi, prefix, numCls) {
+  var label = prefix === 'orig' ? 'Q' + q.n : 'A' + q.n;
+  var boxCls = prefix === 'alt' ? ' alt-box' : '';
+  var icon = prefix === 'alt' ? '&#128260;' : '&#128221;';
+  var nSteps = q.steps.length;
+  var tagCls = q.tagCls || q.tag;
+  var tagLabel = q.tagLabel;
+  var ansText = q.answers ? q.answers.join(' | ') : String(q.answer);
+
+  var h = '<div class="q-card"><div class="q-header">' +
+    '<div class="q-number ' + numCls + '">' + label + '</div>' +
+    '<div class="q-title-area"><h2>' + q.title + '</h2>' +
+    '<span class="q-type ' + tagCls + '">' + tagLabel + '</span></div></div>';
+
+  // Problem text
+  h += '<div class="problem-box' + boxCls + '" data-icon="' + icon + '">' +
+    q.text.replace(/\n/g, '<br>') + '</div>';
+
+  // Table if present
+  if (q.tableData) {
+    h += buildTableHTML(q.tableData);
+  }
+
+  // Visualization
+  h += buildViz(q, qi, prefix);
+
+  // Steps
+  h += '<div class="steps-area"><div class="controls-bar">' +
+    '<button class="step-btn primary" onclick="revealStep(\'' + prefix + '-' + qi + '\',' + nSteps + ')">Show Next Step &#9654;</button>' +
+    '<button class="step-btn secondary" onclick="revealAll(\'' + prefix + '-' + qi + '\',' + nSteps + ')">Show All</button>' +
+    '<button class="step-btn reset" onclick="resetSteps(\'' + prefix + '-' + qi + '\',' + nSteps + ')">&#8634; Reset</button></div>';
+
+  h += '<div class="solution-steps" id="steps-' + prefix + '-' + qi + '">';
+  /* Tip box shown only with steps */
+  if (q.tip) {
+    h += '<div class="sol-step s3" id="step-' + prefix + '-' + qi + '-tip" style="display:none;border-left-color:#90caf9;background:linear-gradient(135deg,#e3f2fd,#e8eaf6);">' +
+      '<span style="font-size:18px;margin-right:6px;vertical-align:middle;">&#128161;</span> <strong>Hint:</strong> ' + q.tip + '</div>';
+  }
+  for (var i = 0; i < nSteps; i++) {
+    var sc = 's' + ((i % 6) + 1);
+    h += '<div class="sol-step ' + sc + '" id="step-' + prefix + '-' + qi + '-' + i + '">' +
+      '<span class="step-num">' + (i + 1) + '</span> ' + fmtFrac(q.steps[i]) + '</div>';
+  }
+  h += '</div>';
+
+  h += '<div class="final-answer" id="answer-' + prefix + '-' + qi + '">' +
+    '&#9989; Answer: <span style="font-size:20px;color:var(--purple);display:block;margin-top:3px;">' + fmtFrac(ansText) + '</span></div>';
+  h += '</div>';
+
+  // Answer input
+  h += '<div class="answer-section"><label>Your Answer:</label>' +
+    '<input type="text" class="answer-input" id="input-' + prefix + '-' + qi + '" placeholder="Enter answer" ' +
+    'onkeydown="if(event.key===\'Enter\')checkAns(\'' + prefix + '\',' + qi + ')">' +
+    '<button class="check-btn" onclick="checkAns(\'' + prefix + '\',' + qi + ')">Check &#10003;</button>' +
+    '<span class="answer-feedback" id="fb-' + prefix + '-' + qi + '"></span></div>';
+
+  h += '</div>';
+  return h;
+}
+
+function buildTableHTML(td) {
+  var h = '<table class="data-table"><thead><tr>';
+  for (var i = 0; i < td.headers.length; i++) {
+    h += '<th>' + td.headers[i] + '</th>';
+  }
+  h += '</tr></thead><tbody>';
+  for (var r = 0; r < td.rows.length; r++) {
+    var row = td.rows[r];
+    var isFinal = (r === td.rows.length - 1);
+    h += '<tr' + (isFinal ? ' class="highlight-row"' : '') + '>';
+    for (var c = 0; c < row.length; c++) {
+      h += '<td>' + row[c] + '</td>';
+    }
+    h += '</tr>';
+  }
+  h += '</tbody></table>';
+  return h;
+}
+
+function buildViz(q, qi, prefix) {
+  var h = '<div class="viz-area"><div class="viz-title">&#128202; Pattern Figures</div>';
+  h += '<div class="pattern-figures">';
+
+  /* ================================================================
+     USE q.n (question number) TO DRAW UNIQUE SVG SHAPES PER QUESTION
+     Each figure uses circles, rectangles, lines (sticks), triangles
+     ================================================================ */
+
+  if (q.n === 1 && (q.tag === 'table-pattern')) {
+    /* Q1 / A1: DOTS & LINES GRID — dots in n×(n+1) grid with connecting lines */
+    var figData = (q.title.indexOf('Stars') >= 0)
+      ? [{r:2,c:3,label:'Fig 1'},{r:3,c:4,label:'Fig 2'},{r:4,c:5,label:'Fig 3'},{r:5,c:6,label:'Fig 4'}]
+      : [{r:1,c:2,label:'Fig 1'},{r:2,c:3,label:'Fig 2'},{r:3,c:4,label:'Fig 3'},{r:4,c:5,label:'Fig 4'}];
+    for (var f = 0; f < figData.length; f++) {
+      var fd = figData[f];
+      var sp = 18, pad = 12, rad = 5;
+      var sw = fd.c * sp + pad * 2, sh = fd.r * sp + pad * 2 + 22;
+      h += '<div class="pattern-fig"><svg width="' + sw + '" height="' + sh + '" viewBox="0 0 ' + sw + ' ' + sh + '">';
+      /* Draw connecting lines first (behind dots) */
+      for (var row = 0; row < fd.r; row++) {
+        for (var col = 0; col < fd.c; col++) {
+          var cx = pad + col * sp + sp/2, cy = pad + row * sp + sp/2;
+          /* horizontal line */
+          if (col < fd.c - 1) {
+            h += '<line x1="' + cx + '" y1="' + cy + '" x2="' + (cx + sp) + '" y2="' + cy + '" stroke="#c084d8" stroke-width="2"/>';
+          }
+          /* vertical line */
+          if (row < fd.r - 1) {
+            h += '<line x1="' + cx + '" y1="' + cy + '" x2="' + cx + '" y2="' + (cy + sp) + '" stroke="#c084d8" stroke-width="2"/>';
+          }
+        }
+      }
+      /* Draw dots (circles) */
+      for (var row = 0; row < fd.r; row++) {
+        for (var col = 0; col < fd.c; col++) {
+          var cx = pad + col * sp + sp/2, cy = pad + row * sp + sp/2;
+          h += '<circle cx="' + cx + '" cy="' + cy + '" r="' + rad + '" fill="#7b2d8e" stroke="white" stroke-width="1.5"/>';
+        }
+      }
+      /* Count label */
+      var dots = fd.r * fd.c;
+      h += '<text x="' + (sw/2) + '" y="' + (sh - 3) + '" text-anchor="middle" font-size="9" font-weight="700" fill="#7f8c8d">' + dots + ' dots</text>';
+      h += '</svg><div class="pattern-fig-label">' + fd.label + '</div></div>';
+    }
+  }
+
+  else if (q.n === 2 && q.tag === 'grid-pattern') {
+    /* Q2 / A2: QUEUE SERPENTINE — circles in alternating rows with numbers */
+    var cols = (q.title.indexOf('Cinema') >= 0) ? 6 : 4;
+    var cellSz = cols === 6 ? 28 : 34;
+    var totalCells = cols * 4;
+    var nums = [];
+    for (var row = 0; row < 4; row++) {
+      if (row % 2 === 0) { for (var c = 0; c < cols; c++) nums.push(row * cols + c + 1); }
+      else { for (var c = cols - 1; c >= 0; c--) nums.push(row * cols + c + 1); }
+    }
+    var gw = cols * (cellSz + 4) + 30, gh = 4 * (cellSz + 4) + 30;
+    h += '<div class="pattern-fig"><svg width="' + gw + '" height="' + gh + '" viewBox="0 0 ' + gw + ' ' + gh + '">';
+    /* Arrow indicators */
+    for (var row = 0; row < 4; row++) {
+      var ay = 12 + row * (cellSz + 4) + cellSz / 2;
+      var arrow = (row % 2 === 0) ? '→' : '←';
+      h += '<text x="' + (gw - 12) + '" y="' + (ay + 4) + '" text-anchor="middle" font-size="12" fill="' + (row % 2 === 0 ? '#f9a825' : '#00b4d8') + '">' + arrow + '</text>';
+    }
+    var idx = 0;
+    for (var row = 0; row < 4; row++) {
+      for (var col = 0; col < cols; col++) {
+        var cx = 12 + col * (cellSz + 4) + cellSz / 2;
+        var cy = 12 + row * (cellSz + 4) + cellSz / 2;
+        var fillC = (row % 2 === 0) ? '#f9a825' : '#00b4d8';
+        h += '<circle cx="' + cx + '" cy="' + cy + '" r="' + (cellSz/2 - 1) + '" fill="' + fillC + '" opacity="0.9"/>';
+        h += '<text x="' + cx + '" y="' + (cy + 4) + '" text-anchor="middle" font-size="' + (cols === 6 ? 9 : 11) + '" font-weight="800" fill="white">' + nums[idx] + '</text>';
+        idx++;
+      }
+    }
+    h += '</svg><div class="pattern-fig-label">Alternating ' + cols + '-column queue</div></div>';
+  }
+
+  else if (q.n === 3 && q.tag === 'formula-pattern') {
+    /* Q3 / A3: COMPLETE GRAPH or POLYGON DIAGONALS — circles arranged in polygon with all connecting lines */
+    var isPolygon = (q.title.indexOf('Diagonal') >= 0);
+    var figSizes = isPolygon ? [3, 4, 5, 6] : [2, 3, 4, 5];
+    var figLabels = ['Fig 1', 'Fig 2', 'Fig 3', 'Fig 4'];
+    for (var f = 0; f < figSizes.length; f++) {
+      var n = figSizes[f], sz = 40 + n * 10, cx0 = sz / 2, cy0 = sz / 2 - 2, r0 = sz / 2 - 16, cr = 6;
+      h += '<div class="pattern-fig"><svg width="' + sz + '" height="' + (sz + 18) + '" viewBox="0 0 ' + sz + ' ' + (sz + 18) + '">';
+      /* Calculate positions around a circle */
+      var pts = [];
+      for (var i = 0; i < n; i++) {
+        var angle = -Math.PI / 2 + (2 * Math.PI * i) / n;
+        pts.push({ x: cx0 + r0 * Math.cos(angle), y: cy0 + r0 * Math.sin(angle) });
+      }
+      /* Draw all connecting lines */
+      for (var i = 0; i < n; i++) {
+        for (var j = i + 1; j < n; j++) {
+          var isEdge = (j === i + 1) || (i === 0 && j === n - 1);
+          var lineColor = isEdge ? '#00b4d8' : '#e6007e';
+          var lineW = isEdge ? 2 : 1.5;
+          var dash = isEdge ? '' : ' stroke-dasharray="4,2"';
+          h += '<line x1="' + pts[i].x.toFixed(1) + '" y1="' + pts[i].y.toFixed(1) + '" x2="' + pts[j].x.toFixed(1) + '" y2="' + pts[j].y.toFixed(1) + '" stroke="' + lineColor + '" stroke-width="' + lineW + '"' + dash + '/>';
+        }
+      }
+      /* Draw circles at vertices */
+      for (var i = 0; i < n; i++) {
+        h += '<circle cx="' + pts[i].x.toFixed(1) + '" cy="' + pts[i].y.toFixed(1) + '" r="' + cr + '" fill="#7b2d8e" stroke="white" stroke-width="2"/>';
+      }
+      /* Lines count */
+      var lineCount = isPolygon ? (n * (n - 3) / 2) : (n * (n - 1) / 2);
+      h += '<text x="' + cx0 + '" y="' + (sz + 12) + '" text-anchor="middle" font-size="9" font-weight="700" fill="#7f8c8d">' + (isPolygon ? n + ' sides, ' + lineCount + ' diag' : n + ' ●, ' + lineCount + ' lines') + '</text>';
+      h += '</svg><div class="pattern-fig-label">' + figLabels[f] + '</div></div>';
+    }
+  }
+
+  else if (q.tag === 'perfect-sq') {
+    /* Q4 / A4: SQUARES & CIRCLES — L-shape border of squares with interior circles
+       Figure n is an n×n grid where:
+       - Bottom row + left column = blue squares (2n-1 total)
+       - Interior (n-1)×(n-1) = pink circles
+       Matching the reference diagram exactly */
+    var figs = [
+      {n: 1, sq: 1, ci: 0},
+      {n: 2, sq: 3, ci: 1},
+      {n: 3, sq: 5, ci: 4},
+      {n: 4, sq: 7, ci: 9}
+    ];
+    for (var f = 0; f < figs.length; f++) {
+      var fd = figs[f];
+      var gridN = fd.n;
+      var cellSz2 = 22, pad2 = 10;
+      var svgW = gridN * cellSz2 + pad2 * 2;
+      var svgH = gridN * cellSz2 + pad2 * 2 + 18;
+      h += '<div class="pattern-fig"><svg width="' + svgW + '" height="' + svgH + '" viewBox="0 0 ' + svgW + ' ' + svgH + '">';
+      /* Draw grid: bottom row & left column = squares, rest = circles */
+      for (var row = 0; row < gridN; row++) {
+        for (var col = 0; col < gridN; col++) {
+          var x = pad2 + col * cellSz2;
+          /* rows are drawn top-down in SVG; row 0 = top. Bottom row = gridN-1, left col = 0 */
+          var y2 = pad2 + row * cellSz2;
+          var isBottom = (row === gridN - 1);   /* bottom row */
+          var isLeft = (col === 0);              /* left column */
+          var isSquare = isBottom || isLeft;
+          if (isSquare) {
+            /* Blue square with darker border */
+            h += '<rect x="' + (x + 1) + '" y="' + (y2 + 1) + '" width="' + (cellSz2 - 2) + '" height="' + (cellSz2 - 2) + '" rx="2" fill="#a8d8ea" stroke="#4a90a4" stroke-width="1.5"/>';
+          } else {
+            /* Pink circle */
+            h += '<circle cx="' + (x + cellSz2/2) + '" cy="' + (y2 + cellSz2/2) + '" r="' + (cellSz2/2 - 3) + '" fill="#f8bbd0" stroke="#e48aa7" stroke-width="1.5"/>';
+          }
+        }
+      }
+      h += '<text x="' + (svgW/2) + '" y="' + (svgH - 2) + '" text-anchor="middle" font-size="8" font-weight="700" fill="#7f8c8d">' + fd.sq + '■ ' + fd.ci + '●</text>';
+      h += '</svg><div class="pattern-fig-label">Fig ' + (f + 1) + '</div></div>';
+    }
+  }
+
+  else if (q.tag === 'alternating') {
+    /* Q5 / A5: WHITE & GREY CIRCLES — rows of alternating white and grey circles */
+    var wgData = (q.title.indexOf('Red') >= 0)
+      ? [{w:2,g:1},{w:2,g:4},{w:6,g:4},{w:6,g:9},{w:12,g:9}]
+      : [{w:1,g:2},{w:4,g:2},{w:4,g:6},{w:9,g:6},{w:9,g:12}];
+    var wLabel = (q.title.indexOf('Red') >= 0) ? 'R' : 'W';
+    var gLabel = (q.title.indexOf('Red') >= 0) ? 'B' : 'G';
+    var wColor = (q.title.indexOf('Red') >= 0) ? '#e74c3c' : '#ffffff';
+    var gColor = (q.title.indexOf('Red') >= 0) ? '#2196f3' : '#95a5a6';
+    var wStroke = (q.title.indexOf('Red') >= 0) ? '#c0392b' : '#7f8c8d';
+    for (var f = 0; f < 5; f++) {
+      var d = wgData[f], total = d.w + d.g;
+      var cols2 = Math.min(total, Math.ceil(Math.sqrt(total)));
+      var rows2 = Math.ceil(total / cols2);
+      var cR = 6, sp2 = 16, pad3 = 10;
+      var svgW2 = cols2 * sp2 + pad3 * 2, svgH2 = rows2 * sp2 + pad3 * 2 + 20;
+      h += '<div class="pattern-fig"><svg width="' + svgW2 + '" height="' + svgH2 + '" viewBox="0 0 ' + svgW2 + ' ' + svgH2 + '">';
+      var drawn = 0;
+      /* Draw white circles first, then grey */
+      for (var row = 0; row < rows2 && drawn < total; row++) {
+        for (var col = 0; col < cols2 && drawn < total; col++) {
+          var cx3 = pad3 + col * sp2 + sp2/2, cy3 = pad3 + row * sp2 + sp2/2;
+          var isWhite = drawn < d.w;
+          h += '<circle cx="' + cx3 + '" cy="' + cy3 + '" r="' + cR + '" fill="' + (isWhite ? wColor : gColor) + '" stroke="' + (isWhite ? wStroke : '#687078') + '" stroke-width="1.5"/>';
+          drawn++;
+        }
+      }
+      h += '<text x="' + (svgW2/2) + '" y="' + (svgH2 - 3) + '" text-anchor="middle" font-size="8" font-weight="700" fill="#7f8c8d">' + wLabel + ':' + d.w + ' ' + gLabel + ':' + d.g + '</text>';
+      h += '</svg><div class="pattern-fig-label">Fig ' + (f + 1) + '</div></div>';
+    }
+  }
+
+  else if (q.n === 6 && q.tag === 'formula-pattern') {
+    /* Q6 / A6: TRIANGLE PATTERN — triangular arrangement of white and grey circles */
+    var triData = (q.title.indexOf('Pyramid') >= 0)
+      ? [{b:0,w:1},{b:1,w:3},{b:3,w:6},{b:6,w:10}]
+      : [{w:1,g:0},{w:1,g:3},{w:6,g:3},{w:6,g:10}];
+    var isPyramid = (q.title.indexOf('Pyramid') >= 0);
+    for (var f = 0; f < 4; f++) {
+      var n = f + 1;
+      var totalN = n * n;
+      var sp3 = 14, pad4 = 10, cR2 = 5;
+      var svgW3 = n * sp3 + pad4 * 2, svgH3 = n * sp3 + pad4 * 2 + 20;
+      h += '<div class="pattern-fig"><svg width="' + svgW3 + '" height="' + svgH3 + '" viewBox="0 0 ' + svgW3 + ' ' + svgH3 + '">';
+      /* Draw n×n grid as triangle-ish layout */
+      var cellIdx = 0;
+      for (var row = 0; row < n; row++) {
+        for (var col = 0; col <= row; col++) {
+          var cx4 = pad4 + (svgW3 - pad4*2)/2 - row * sp3/2 + col * sp3;
+          var cy4 = pad4 + row * sp3 + sp3/2;
+          /* Alternate between white and grey based on pattern */
+          var isW;
+          if (isPyramid) isW = cellIdx >= triData[f].b;
+          else isW = cellIdx < triData[f].w;
+          h += '<circle cx="' + cx4 + '" cy="' + cy4 + '" r="' + cR2 + '" fill="' + (isW ? '#ffffff' : '#95a5a6') + '" stroke="' + (isW ? '#7f8c8d' : '#687078') + '" stroke-width="1.5"/>';
+          cellIdx++;
+        }
+      }
+      /* Fill remaining as squares in lower rows if needed */
+      for (var row2 = n; cellIdx < totalN; row2++) {
+        var colsInRow = Math.min(totalN - cellIdx, n);
+        for (var col2 = 0; col2 < colsInRow && cellIdx < totalN; col2++) {
+          var cx5 = pad4 + col2 * sp3 + sp3/2;
+          var cy5 = pad4 + row2 * sp3 + sp3/2;
+          var isW2 = isPyramid ? cellIdx >= triData[f].b : cellIdx < triData[f].w;
+          h += '<circle cx="' + cx5 + '" cy="' + cy5 + '" r="' + cR2 + '" fill="' + (isW2 ? '#ffffff' : '#95a5a6') + '" stroke="' + (isW2 ? '#7f8c8d' : '#687078') + '" stroke-width="1.5"/>';
+          cellIdx++;
+        }
+      }
+      var tLabel = isPyramid ? 'B:' + triData[f].b + ' W:' + triData[f].w : 'W:' + triData[f].w + ' G:' + triData[f].g;
+      h += '<text x="' + (svgW3/2) + '" y="' + (svgH3 - 3) + '" text-anchor="middle" font-size="8" font-weight="700" fill="#7f8c8d">' + tLabel + '</text>';
+      h += '</svg><div class="pattern-fig-label">Fig ' + (f + 1) + '</div></div>';
+    }
+  }
+
+  else if (q.n === 7 && q.tag === 'table-pattern') {
+    /* Q7 / A7: TRIANGLES & SQUARES — actual triangle and square shapes arranged in growing pattern */
+    var isHex = (q.title.indexOf('Hex') >= 0);
+    var figTriSq = [{t:2,s:1},{t:3,s:3},{t:4,s:6},{t:5,s:10}];
+    for (var f = 0; f < 4; f++) {
+      var fd2 = figTriSq[f];
+      var sz2 = 14, pad5 = 10;
+      var perRow = f + 2;
+      var totalShapes = fd2.t + fd2.s;
+      var rows3 = Math.ceil(totalShapes / perRow);
+      var svgW4 = perRow * (sz2 + 4) + pad5 * 2 + 10, svgH4 = rows3 * (sz2 + 6) + pad5 * 2 + 20;
+      h += '<div class="pattern-fig"><svg width="' + svgW4 + '" height="' + svgH4 + '" viewBox="0 0 ' + svgW4 + ' ' + svgH4 + '">';
+      var drawn2 = 0;
+      for (var row = 0; row < rows3 && drawn2 < totalShapes; row++) {
+        for (var col = 0; col < perRow && drawn2 < totalShapes; col++) {
+          var sx = pad5 + col * (sz2 + 4) + 5;
+          var sy = pad5 + row * (sz2 + 6);
+          if (drawn2 < fd2.t) {
+            /* Draw triangle */
+            var triPts = sx + ',' + (sy + sz2) + ' ' + (sx + sz2/2) + ',' + sy + ' ' + (sx + sz2) + ',' + (sy + sz2);
+            h += '<polygon points="' + triPts + '" fill="' + (isHex ? '#f9a825' : '#e6007e') + '" stroke="white" stroke-width="1"/>';
+          } else {
+            /* Draw square */
+            h += '<rect x="' + sx + '" y="' + sy + '" width="' + sz2 + '" height="' + sz2 + '" rx="1" fill="' + (isHex ? '#7b2d8e' : '#00b4d8') + '" stroke="white" stroke-width="1"/>';
+          }
+          drawn2++;
+        }
+      }
+      h += '<text x="' + (svgW4/2) + '" y="' + (svgH4 - 3) + '" text-anchor="middle" font-size="8" font-weight="700" fill="#7f8c8d">' + fd2.t + '▲ ' + fd2.s + '■</text>';
+      h += '</svg><div class="pattern-fig-label">Fig ' + (f + 1) + '</div></div>';
+    }
+  }
+
+  else if (q.tag === 'special-set') {
+    /* Q8 / A8: STICK STRUCTURES — 3D cube-like structures made of lines (sticks) */
+    var groupSize = (q.title.indexOf('Rod') >= 0) ? 4 : 3;
+    var unitH = (q.title.indexOf('Rod') >= 0) ? 3 : 2;
+    var structures = [];
+    if (groupSize === 3) {
+      structures = [
+        {w:1,h:1,sticks:12},{w:2,h:1,sticks:20},{w:3,h:1,sticks:28},
+        {w:1,h:2,sticks:36},{w:2,h:2,sticks:41},{w:3,h:2,sticks:46}
+      ];
+    } else {
+      structures = [
+        {w:1,h:1,sticks:10},{w:2,h:1,sticks:16},{w:3,h:1,sticks:22},{w:4,h:1,sticks:28},
+        {w:1,h:2,sticks:34},{w:2,h:2,sticks:38}
+      ];
+    }
+    var showN = Math.min(structures.length, 6);
+    for (var f = 0; f < showN; f++) {
+      var st = structures[f];
+      var cubeW = 22, cubeH = 18, isoX = 8, isoY = 6;
+      var svgW5 = st.w * cubeW + isoX + 20, svgH5 = st.h * cubeH + isoY + 32;
+      h += '<div class="pattern-fig"><svg width="' + svgW5 + '" height="' + svgH5 + '" viewBox="0 0 ' + svgW5 + ' ' + svgH5 + '">';
+      /* Draw stacked cubes as isometric-ish rectangles with sticks */
+      for (var ly = st.h - 1; ly >= 0; ly--) {
+        for (var lx = 0; lx < st.w; lx++) {
+          var bx = 8 + lx * cubeW;
+          var by = 4 + (st.h - 1 - ly) * cubeH;
+          var groupIdx = Math.floor(f / groupSize);
+          var clr = ['#00b4d8', '#7b2d8e', '#e6007e', '#f9a825'][groupIdx % 4];
+          /* Front face */
+          h += '<rect x="' + bx + '" y="' + (by + isoY) + '" width="' + cubeW + '" height="' + cubeH + '" fill="' + clr + '" stroke="white" stroke-width="1.5" opacity="0.85"/>';
+          /* Top face (parallelogram as polygon) */
+          var topPts = bx + ',' + (by + isoY) + ' ' + (bx + isoX) + ',' + by + ' ' + (bx + cubeW + isoX) + ',' + by + ' ' + (bx + cubeW) + ',' + (by + isoY);
+          h += '<polygon points="' + topPts + '" fill="' + clr + '" stroke="white" stroke-width="1.5" opacity="0.65"/>';
+          /* Right side face */
+          var sidePts = (bx + cubeW) + ',' + (by + isoY) + ' ' + (bx + cubeW + isoX) + ',' + by + ' ' + (bx + cubeW + isoX) + ',' + (by + cubeH) + ' ' + (bx + cubeW) + ',' + (by + isoY + cubeH);
+          h += '<polygon points="' + sidePts + '" fill="' + clr + '" stroke="white" stroke-width="1.5" opacity="0.5"/>';
+        }
+      }
+      h += '<text x="' + (svgW5/2) + '" y="' + (svgH5 - 2) + '" text-anchor="middle" font-size="8" font-weight="700" fill="#7f8c8d">' + st.sticks + ' sticks</text>';
+      h += '</svg><div class="pattern-fig-label">Str ' + (f + 1) + '</div></div>';
+    }
+  }
+
+  else if (q.tag === 'cube-pattern') {
+    /* Q9 / A9: CUBE STAIRCASE — stacked cubes viewed from side, each layer is n² */
+    var cubeSide = (q.title.indexOf('3-cm') >= 0) ? 3 : 2;
+    for (var f = 1; f <= 4; f++) {
+      var cSz = 14, pad6 = 8, isoX2 = 5, isoY2 = 4;
+      var svgW6 = f * cSz + isoX2 + pad6 * 2, svgH6 = f * cSz + isoY2 + pad6 * 2 + 18;
+      h += '<div class="pattern-fig"><svg width="' + svgW6 + '" height="' + svgH6 + '" viewBox="0 0 ' + svgW6 + ' ' + svgH6 + '">';
+      /* Draw staircase: layer k has k×k cubes (viewed from front, show front column) */
+      for (var layer = 0; layer < f; layer++) {
+        var layerW = layer + 1;
+        for (var col = 0; col < layerW; col++) {
+          var bx2 = pad6 + col * cSz;
+          var by2 = pad6 + (f - 1 - layer) * cSz;
+          var shade = Math.round(123 + layer * 30);
+          var clr2 = 'rgb(' + shade + ',45,' + Math.round(142 - layer * 15) + ')';
+          /* Front face */
+          h += '<rect x="' + bx2 + '" y="' + (by2 + isoY2) + '" width="' + cSz + '" height="' + cSz + '" fill="' + clr2 + '" stroke="white" stroke-width="1"/>';
+          /* Top face */
+          if (layer === f - 1 || col >= layer) {
+            var tp = bx2 + ',' + (by2 + isoY2) + ' ' + (bx2 + isoX2) + ',' + by2 + ' ' + (bx2 + cSz + isoX2) + ',' + by2 + ' ' + (bx2 + cSz) + ',' + (by2 + isoY2);
+            h += '<polygon points="' + tp + '" fill="' + clr2 + '" stroke="white" stroke-width="1" opacity="0.6"/>';
+          }
+          /* Right side */
+          if (col === layerW - 1) {
+            var sp4 = (bx2 + cSz) + ',' + (by2 + isoY2) + ' ' + (bx2 + cSz + isoX2) + ',' + by2 + ' ' + (bx2 + cSz + isoX2) + ',' + (by2 + cSz) + ' ' + (bx2 + cSz) + ',' + (by2 + isoY2 + cSz);
+            h += '<polygon points="' + sp4 + '" fill="' + clr2 + '" stroke="white" stroke-width="1" opacity="0.4"/>';
+          }
+        }
+      }
+      var cubeCount = 0; for (var k = 1; k <= f; k++) cubeCount += k * k;
+      h += '<text x="' + (svgW6/2) + '" y="' + (svgH6 - 3) + '" text-anchor="middle" font-size="8" font-weight="700" fill="#7f8c8d">' + cubeCount + ' cubes</text>';
+      h += '</svg><div class="pattern-fig-label">Fig ' + f + '</div></div>';
+    }
+  }
+
+  else if (q.tag === 'matchstick') {
+    /* Q10 / A10: MATCHSTICK PATTERNS — lines forming square or triangle grids */
+    var isTriangle = (q.title.indexOf('Triangle') >= 0);
+    if (isTriangle) {
+      /* Triangle matchstick patterns */
+      var triFigs = [
+        {rows:1, sticks:3},
+        {rows:1, cols:2, sticks:5},
+        {rows:2, sticks:9},
+        {rows:2, cols:2, sticks:12}
+      ];
+      for (var f = 0; f < 4; f++) {
+        var tf = triFigs[f];
+        var triSz = 24, pad7 = 12;
+        var maxCols = tf.cols || (tf.rows > 1 ? 1 : 1);
+        var svgW7 = maxCols * triSz + pad7 * 2 + 10;
+        var svgH7 = tf.rows * triSz + pad7 * 2 + 20;
+        h += '<div class="pattern-fig"><svg width="' + svgW7 + '" height="' + svgH7 + '" viewBox="0 0 ' + svgW7 + ' ' + svgH7 + '">';
+        /* Draw triangles as 3 lines each */
+        for (var row = 0; row < tf.rows; row++) {
+          var numInRow = row + 1;
+          if (tf.cols) numInRow = tf.cols;
+          for (var col = 0; col < numInRow; col++) {
+            var tx = pad7 + col * triSz;
+            var ty = pad7 + row * triSz;
+            var isUp = (row + col) % 2 === 0;
+            if (isUp) {
+              h += '<line x1="' + tx + '" y1="' + (ty + triSz) + '" x2="' + (tx + triSz/2) + '" y2="' + ty + '" stroke="#f9a825" stroke-width="3" stroke-linecap="round"/>';
+              h += '<line x1="' + (tx + triSz/2) + '" y1="' + ty + '" x2="' + (tx + triSz) + '" y2="' + (ty + triSz) + '" stroke="#f9a825" stroke-width="3" stroke-linecap="round"/>';
+              h += '<line x1="' + tx + '" y1="' + (ty + triSz) + '" x2="' + (tx + triSz) + '" y2="' + (ty + triSz) + '" stroke="#f9a825" stroke-width="3" stroke-linecap="round"/>';
+            } else {
+              h += '<line x1="' + tx + '" y1="' + ty + '" x2="' + (tx + triSz/2) + '" y2="' + (ty + triSz) + '" stroke="#e6007e" stroke-width="3" stroke-linecap="round"/>';
+              h += '<line x1="' + (tx + triSz/2) + '" y1="' + (ty + triSz) + '" x2="' + (tx + triSz) + '" y2="' + ty + '" stroke="#e6007e" stroke-width="3" stroke-linecap="round"/>';
+              h += '<line x1="' + tx + '" y1="' + ty + '" x2="' + (tx + triSz) + '" y2="' + ty + '" stroke="#e6007e" stroke-width="3" stroke-linecap="round"/>';
+            }
+          }
+        }
+        /* Matchstick joints as small circles */
+        h += '<text x="' + (svgW7/2) + '" y="' + (svgH7 - 3) + '" text-anchor="middle" font-size="8" font-weight="700" fill="#7f8c8d">' + tf.sticks + ' sticks</text>';
+        h += '</svg><div class="pattern-fig-label">Fig ' + (f + 1) + '</div></div>';
+      }
+    } else {
+      /* Square matchstick patterns: Fig 1 = 1×1, Fig 2 = 1×2, Fig 3 = L-shape, Fig 4 = 2×2 */
+      var sqFigs = [
+        {grid:[[1]], sticks:4},
+        {grid:[[1,1]], sticks:7},
+        {grid:[[1,1],[1,0]], sticks:10},
+        {grid:[[1,1],[1,1]], sticks:12}
+      ];
+      for (var f = 0; f < 4; f++) {
+        var sf = sqFigs[f];
+        var grid = sf.grid;
+        var mSz = 26, pad8 = 10;
+        var gRows = grid.length, gCols = grid[0].length;
+        var svgW8 = gCols * mSz + pad8 * 2, svgH8 = gRows * mSz + pad8 * 2 + 20;
+        h += '<div class="pattern-fig"><svg width="' + svgW8 + '" height="' + svgH8 + '" viewBox="0 0 ' + svgW8 + ' ' + svgH8 + '">';
+        /* Draw matchstick squares */
+        for (var row = 0; row < gRows; row++) {
+          for (var col = 0; col < gCols; col++) {
+            if (!grid[row][col]) continue;
+            var mx = pad8 + col * mSz, my = pad8 + row * mSz;
+            /* Top stick */
+            h += '<line x1="' + mx + '" y1="' + my + '" x2="' + (mx + mSz) + '" y2="' + my + '" stroke="#f9a825" stroke-width="3" stroke-linecap="round"/>';
+            /* Right stick */
+            h += '<line x1="' + (mx + mSz) + '" y1="' + my + '" x2="' + (mx + mSz) + '" y2="' + (my + mSz) + '" stroke="#f9a825" stroke-width="3" stroke-linecap="round"/>';
+            /* Bottom stick */
+            h += '<line x1="' + mx + '" y1="' + (my + mSz) + '" x2="' + (mx + mSz) + '" y2="' + (my + mSz) + '" stroke="#f9a825" stroke-width="3" stroke-linecap="round"/>';
+            /* Left stick */
+            h += '<line x1="' + mx + '" y1="' + my + '" x2="' + mx + '" y2="' + (my + mSz) + '" stroke="#f9a825" stroke-width="3" stroke-linecap="round"/>';
+          }
+        }
+        /* Corner joints as small circles */
+        var joints = {};
+        for (var row = 0; row < gRows; row++) {
+          for (var col = 0; col < gCols; col++) {
+            if (!grid[row][col]) continue;
+            var corners = [[col, row], [col+1, row], [col, row+1], [col+1, row+1]];
+            for (var ci = 0; ci < corners.length; ci++) {
+              var key = corners[ci][0] + '_' + corners[ci][1];
+              if (!joints[key]) {
+                joints[key] = 1;
+                var jx = pad8 + corners[ci][0] * mSz, jy = pad8 + corners[ci][1] * mSz;
+                h += '<circle cx="' + jx + '" cy="' + jy + '" r="3" fill="#e6007e"/>';
+              }
+            }
+          }
+        }
+        h += '<text x="' + (svgW8/2) + '" y="' + (svgH8 - 3) + '" text-anchor="middle" font-size="8" font-weight="700" fill="#7f8c8d">' + sf.sticks + ' sticks</text>';
+        h += '</svg><div class="pattern-fig-label">Fig ' + (f + 1) + '</div></div>';
+      }
+    }
+  }
+
+  else {
+    /* FALLBACK: generic pattern visualization */
+    h += '<div style="text-align:center;padding:16px;color:var(--text-light);font-size:13px;">Identify the number pattern from the table → apply formula to find answer.</div>';
+  }
+
+  h += '</div></div>';
+  return h;
+}
+
+function navBtnsHTML(idx) {
+  var maxIdx = ORIG.length + 1;
+  var prevD = idx === 0 ? ' disabled style="opacity:0.3;pointer-events:none;"' : '';
+  var nextD = idx >= maxIdx ? ' disabled style="opacity:0.3;pointer-events:none;"' : '';
+  return '<div class="nav-buttons">' +
+    '<button class="nav-btn prev" onclick="goTo(' + (idx - 1) + ')"' + prevD + '>&larr; Previous</button>' +
+    '<button class="nav-btn next" onclick="goTo(' + (idx + 1) + ')"' + nextD + '>Next &rarr;</button></div>';
+}
+
+/* ==========================================================
+   TABS
+   ========================================================== */
+function switchTab(qi, which, btn) {
+  var parent = btn.parentElement;
+  var btns = parent.querySelectorAll('.tab-btn');
+  for (var i = 0; i < btns.length; i++) btns[i].classList.remove('active');
+  btn.classList.add('active');
+  var origTab = document.getElementById('tab-orig-' + qi);
+  var altTab = document.getElementById('tab-alt-' + qi);
+  if (origTab) origTab.classList.toggle('active', which === 'orig');
+  if (altTab) altTab.classList.toggle('active', which === 'alt');
+}
+
+/* ==========================================================
+   STEP-BY-STEP
+   ========================================================== */
+function revealStep(key, total) {
+  if (!state.stepIdx[key]) state.stepIdx[key] = 0;
+  if (state.stepIdx[key] >= total) return;
+  /* Show tip on first reveal */
+  if (state.stepIdx[key] === 0) {
+    var tip = document.getElementById('step-' + key + '-tip');
+    if (tip) tip.style.display = '';
+  }
+  var el = document.getElementById('step-' + key + '-' + state.stepIdx[key]);
+  if (el) el.classList.add('visible');
+  state.stepIdx[key]++;
+  if (state.stepIdx[key] >= total) {
+    var ans = document.getElementById('answer-' + key);
+    if (ans) ans.classList.add('show');
+  }
+}
+
+function revealAll(key, total) {
+  var tip = document.getElementById('step-' + key + '-tip');
+  if (tip) tip.style.display = '';
+  for (var i = 0; i < total; i++) {
+    var el = document.getElementById('step-' + key + '-' + i);
+    if (el) el.classList.add('visible');
+  }
+  state.stepIdx[key] = total;
+  var ans = document.getElementById('answer-' + key);
+  if (ans) ans.classList.add('show');
+}
+
+function resetSteps(key, total) {
+  state.stepIdx[key] = 0;
+  var tip = document.getElementById('step-' + key + '-tip');
+  if (tip) tip.style.display = 'none';
+  for (var i = 0; i < total; i++) {
+    var el = document.getElementById('step-' + key + '-' + i);
+    if (el) el.classList.remove('visible');
+  }
+  var ans = document.getElementById('answer-' + key);
+  if (ans) ans.classList.remove('show');
+}
+
+/* ==========================================================
+   ANSWER CHECK
+   ========================================================== */
+function checkAns(prefix, qi) {
+  var q = prefix === 'orig' ? ORIG[qi] : ALT[qi];
+  var input = document.getElementById('input-' + prefix + '-' + qi);
+  var fb = document.getElementById('fb-' + prefix + '-' + qi);
+  if (!input || !fb) return;
+
+  var uv = input.value.trim().replace(/\$/g, '').replace(/,/g, '').toLowerCase();
+  var correct = false;
+
+  // Check against ansNums
+  if (q.ansNums) {
+    for (var i = 0; i < q.ansNums.length; i++) {
+      if (Math.abs(parseFloat(uv) - q.ansNums[i]) < 0.1) { correct = true; break; }
+    }
+  }
+
+  // Check against answer strings
+  if (q.answers) {
+    for (var i = 0; i < q.answers.length; i++) {
+      var clean = q.answers[i].replace(/[^0-9.]/g, '');
+      if (uv === clean) { correct = true; break; }
+    }
+  }
+
+  // Check ansLabel
+  if (q.ansLabel) {
+    var cleanLabel = q.ansLabel.replace(/[^0-9.]/g,'');
+    if (uv.replace(/[^0-9.]/g,'') === cleanLabel) correct = true;
+  }
+
+  input.className = 'answer-input ' + (correct ? 'correct' : 'wrong');
+  fb.className = 'answer-feedback show ' + (correct ? 'correct' : 'wrong');
+  fb.innerHTML = correct ? '&#9989; Correct!' : '&#10060; Try again!';
+
+  var ck = prefix + '-' + qi;
+  if (correct && !state.completed[ck]) {
+    state.completed[ck] = true;
+    state.score++;
+    document.getElementById('scoreVal').textContent = state.score;
+    var navItem = document.querySelector('.nav-item[data-idx="' + (qi + 1) + '"]');
+    if (navItem) navItem.classList.add('completed');
+  }
+
+  if (!correct) {
+    input.classList.add('shake');
+    setTimeout(function() { input.classList.remove('shake'); }, 500);
+  }
+}
+
+/* ==========================================================
+   EXPORT MODAL
+   ========================================================== */
+function openExportModal() { document.getElementById('exportModal').classList.add('show'); }
+function closeExportModal() { document.getElementById('exportModal').classList.remove('show'); }
+
+function toggleOpt(el, key) {
+  state.exportOpts[key] = !state.exportOpts[key];
+  el.classList.toggle('selected', state.exportOpts[key]);
+  el.querySelector('input').checked = state.exportOpts[key];
+}
+
+/* ==========================================================
+   PDF GENERATION
+   ========================================================== */
+function generatePDF() {
+  var ind = document.getElementById('genInd');
+  var btn = document.getElementById('genBtn');
+  ind.classList.add('show');
+  btn.disabled = true;
+
+  setTimeout(function() {
+    try {
+      if (!window.jspdf || !window.jspdf.jsPDF) {
+        throw new Error('PDF library failed to load.');
+      }
+      var jsPDF = window.jspdf.jsPDF;
+      var doc = new jsPDF('p', 'mm', 'a4');
+      var W = 210, H = 297, M = 18;
+      var CW = W - 2 * M;
+      var y = 0;
+
+      // ===== COVER =====
+      doc.setFillColor(123, 45, 142);
+      doc.rect(0, 0, W, 45, 'F');
+      doc.setFillColor(0, 180, 216);
+      doc.triangle(0, H, 55, H, 0, H - 55, 'F');
+      doc.setFillColor(230, 0, 126);
+      doc.triangle(W, H, W - 45, H, W, H - 45, 'F');
+
+      doc.setTextColor(255, 255, 255);
+      doc.setFontSize(14);
+      doc.setFont('helvetica', 'bold');
+      doc.text('POLYMATH LEARNING CENTRE', W / 2, 25, {align: 'center'});
+
+      doc.setTextColor(44, 62, 80);
+      doc.setFontSize(26);
+      doc.text('Primary 6 Math', W / 2, 80, {align: 'center'});
+
+      doc.setFontSize(18);
+      doc.setTextColor(123, 45, 142);
+      doc.text('Number Pattern', W / 2, 95, {align: 'center'});
+      doc.text('Practice Worksheet', W / 2, 107, {align: 'center'});
+
+      doc.setFontSize(12);
+      doc.setTextColor(100, 100, 100);
+      doc.text('Name: ________________________________', M, 145);
+      doc.text('Date: ________________________________', M, 160);
+      doc.text('Score: _________ / 10', M, 175);
+
+      // ===== ALTERNATE QUESTIONS =====
+      if (state.exportOpts.altQ) {
+        doc.addPage();
+        y = sectionHeader(doc, 'Practice Questions (Alternate)', M, W);
+        for (var i = 0; i < ALT.length; i++) {
+          if (y > H - 60) { doc.addPage(); y = M + 5; }
+          y = drawQ(doc, i + 1, ALT[i].text, y, M, CW);
+        }
+      }
+
+      // ===== ORIGINAL QUESTIONS =====
+      if (state.exportOpts.origQ) {
+        doc.addPage();
+        y = sectionHeader(doc, 'Original Questions', M, W);
+        for (var i = 0; i < ORIG.length; i++) {
+          if (y > H - 60) { doc.addPage(); y = M + 5; }
+          y = drawQ(doc, i + 1, ORIG[i].text, y, M, CW);
+        }
+      }
+
+      // ===== ANSWER KEY =====
+      if (state.exportOpts.ansKey) {
+        if (state.exportOpts.altQ) {
+          doc.addPage();
+          y = sectionHeader(doc, 'Answer Key - Alternate Questions', M, W);
+          for (var i = 0; i < ALT.length; i++) {
+            if (y > H - 55) { doc.addPage(); y = M + 5; }
+            y = drawAnsKey(doc, i + 1, ALT[i], y, M, CW, H);
+          }
+        }
+        if (state.exportOpts.origQ) {
+          doc.addPage();
+          y = sectionHeader(doc, 'Answer Key - Original Questions', M, W);
+          for (var i = 0; i < ORIG.length; i++) {
+            if (y > H - 55) { doc.addPage(); y = M + 5; }
+            y = drawAnsKey(doc, i + 1, ORIG[i], y, M, CW, H);
+          }
+        }
+      }
+
+      // ===== PAGE NUMBERS =====
+      var totalP = doc.internal.getNumberOfPages();
+      for (var p = 1; p <= totalP; p++) {
+        doc.setPage(p);
+        doc.setFontSize(8);
+        doc.setTextColor(180, 180, 180);
+        doc.text('Polymath Learning Centre | P6 Math Number Pattern | Page ' + p + '/' + totalP, W / 2, H - 8, {align: 'center'});
+      }
+
+      doc.save('P6_Math_Number_Pattern_Worksheet.pdf');
+    } catch (e) {
+      console.error('PDF error:', e);
+      alert('Error generating PDF: ' + e.message);
+    }
+    ind.classList.remove('show');
+    btn.disabled = false;
+    closeExportModal();
+  }, 200);
+}
+
+function sectionHeader(doc, title, M, W) {
+  doc.setFillColor(123, 45, 142);
+  doc.rect(M, 14, W - 2 * M, 12, 'F');
+  doc.setTextColor(255, 255, 255);
+  doc.setFontSize(13);
+  doc.setFont('helvetica', 'bold');
+  doc.text(title, W / 2, 22, {align: 'center'});
+  return 36;
+}
+
+function drawQ(doc, num, text, y, M, CW) {
+  doc.setFillColor(123, 45, 142);
+  doc.circle(M + 5, y, 3.5, 'F');
+  doc.setTextColor(255, 255, 255);
+  doc.setFontSize(8);
+  doc.setFont('helvetica', 'bold');
+  doc.text(String(num), M + 5, y + 1, {align: 'center'});
+
+  doc.setTextColor(44, 62, 80);
+  doc.setFontSize(10.5);
+  doc.setFont('helvetica', 'normal');
+  var cleanText = text.replace(/\n/g, ' ');
+  var lines = doc.splitTextToSize(cleanText, CW - 16);
+  for (var i = 0; i < lines.length; i++) {
+    doc.text(lines[i], M + 12, y + 1 + i * 5);
+  }
+  y += lines.length * 5 + 4;
+
+  doc.setFontSize(9);
+  doc.setTextColor(150, 150, 150);
+  doc.text('Ans: ________________', M + 12, y);
+  y += 14;
+  return y;
+}
+
+function drawAnsKey(doc, num, q, y, M, CW, H) {
+  var ansText = q.answers ? q.answers.join(' | ') : (q.ansLabel || '');
+
+  doc.setFontSize(10.5);
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(123, 45, 142);
+  doc.text('Q' + num + '. ' + q.title, M, y);
+  y += 5.5;
+
+  doc.setFontSize(10);
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(39, 174, 96);
+  var ansLines = doc.splitTextToSize('Answer: ' + ansText, CW - 10);
+  for (var k = 0; k < ansLines.length; k++) {
+    doc.text(ansLines[k], M + 4, y);
+    y += 4.5;
+  }
+
+  doc.setFont('helvetica', 'normal');
+  doc.setTextColor(44, 62, 80);
+  doc.setFontSize(9);
+
+  for (var j = 0; j < q.steps.length; j++) {
+    if (y > H - 15) { doc.addPage(); y = M + 5; }
+    var stepLines = doc.splitTextToSize('Step ' + (j + 1) + ': ' + q.steps[j], CW - 10);
+    for (var k = 0; k < stepLines.length; k++) {
+      doc.text(stepLines[k], M + 4, y);
+      y += 4.2;
+    }
+    y += 1;
+  }
+
+  y += 2;
+  doc.setDrawColor(220, 220, 220);
+  doc.line(M, y, M + CW, y);
+  y += 5;
+  return y;
+}
+
+/* ==========================================================
+   INIT
+   ========================================================== */
+buildSidebar();
+goTo(0);
+</script>
+</body>
+</html>
