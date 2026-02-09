@@ -1114,9 +1114,17 @@ function questionCardHTML(q, qi, prefix, numCls) {
     '<div class="q-title-area"><h2>' + q.title + '</h2>' +
     '<span class="q-type ' + tagCls + '">' + tagLabel + '</span></div></div>';
 
-  // Problem text
-  h += '<div class="problem-box' + boxCls + '" data-icon="' + icon + '">' +
-    q.text.replace(/\n/g, '<br>') + '</div>';
+  // Problem text — Q6 original: inject triangle diagram after first sentence
+  if (q.n === 6 && q.tag === 'formula-pattern' && q.title.indexOf('Pyramid') < 0) {
+    var textParts = q.text.split('\n\n');
+    var firstSentence = textParts[0];
+    var restText = textParts.slice(1).join('<br><br>').replace(/\n/g, '<br>');
+    h += '<div class="problem-box' + boxCls + '" data-icon="' + icon + '">' +
+      firstSentence + buildQ6TriangleDiagram() + restText + '</div>';
+  } else {
+    h += '<div class="problem-box' + boxCls + '" data-icon="' + icon + '">' +
+      q.text.replace(/\n/g, '<br>') + '</div>';
+  }
 
   if (hasSubQs) {
     /* ── SUB-QUESTION LAYOUT: text → viz → table → (a)(b)(c) blanks ── */
@@ -1212,7 +1220,52 @@ function buildTableHTML(td) {
   return h;
 }
 
+function buildQ6TriangleDiagram() {
+  var cR = 14, sp = 32, pad = 20, figGap = 28, labelH = 30, numFigs = 5;
+  var figWidths = [], figContentHeights = [];
+  for (var f = 0; f < numFigs; f++) {
+    var n = f + 1;
+    var bottomCols = 2 * n - 1;
+    var w = Math.max((bottomCols - 1) * sp, 0) + cR * 2 + pad * 2;
+    figWidths.push(w);
+    figContentHeights.push((n - 1) * sp + cR * 2);
+  }
+  var maxContentH = figContentHeights[numFigs - 1];
+  var totalH = maxContentH + pad + labelH;
+  var totalW = 0;
+  for (var f = 0; f < numFigs; f++) {
+    totalW += figWidths[f];
+    if (f < numFigs - 1) totalW += figGap;
+  }
+  var html = '<div style="text-align:center;margin:22px auto 18px;overflow-x:auto;">';
+  html += '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ' + totalW + ' ' + totalH + '" style="max-width:' + totalW + 'px;width:100%;">';
+  var xOff = 0;
+  for (var f = 0; f < numFigs; f++) {
+    var n = f + 1;
+    var centerX = xOff + figWidths[f] / 2;
+    var baseY = totalH - labelH;
+    for (var row = 0; row < n; row++) {
+      var circlesInRow = 2 * row + 1;
+      var cy = baseY - (n - 1 - row) * sp - cR;
+      for (var col = 0; col < circlesInRow; col++) {
+        var cx = centerX - (circlesInRow - 1) * sp / 2 + col * sp;
+        var isWhiteRow = (row % 2 === 0);
+        var fill = isWhiteRow ? '#ffffff' : '#b0b8bf';
+        var stroke = isWhiteRow ? '#555' : '#555';
+        html += '<circle cx="' + cx + '" cy="' + cy + '" r="' + cR + '" fill="' + fill + '" stroke="' + stroke + '" stroke-width="2"/>';
+      }
+    }
+    html += '<text x="' + centerX + '" y="' + (totalH - 4) + '" text-anchor="middle" font-size="14" font-weight="bold" font-family="Nunito,sans-serif" fill="#444">Figure ' + (f + 1) + '</text>';
+    xOff += figWidths[f] + figGap;
+  }
+  html += '</svg></div>';
+  return html;
+}
+
 function buildViz(q, qi, prefix) {
+  /* Original Q6: diagram is inline in question text, skip viz area entirely */
+  if (q.n === 6 && q.tag === 'formula-pattern' && q.title.indexOf('Pyramid') < 0) return '';
+
   var h = '<div class="viz-area"><div class="viz-title">&#128202; Pattern Figures</div>';
   h += '<div class="pattern-figures">';
 
@@ -1414,46 +1467,41 @@ function buildViz(q, qi, prefix) {
   }
 
   else if (q.n === 6 && q.tag === 'formula-pattern') {
-    /* Q6 / A6: TRIANGLE PATTERN — triangular arrangement of white and grey circles */
-    var triData = (q.title.indexOf('Pyramid') >= 0)
-      ? [{b:0,w:1},{b:1,w:3},{b:3,w:6},{b:6,w:10}]
-      : [{w:1,g:0},{w:1,g:3},{w:6,g:3},{w:6,g:10}];
-    var isPyramid = (q.title.indexOf('Pyramid') >= 0);
-    for (var f = 0; f < 4; f++) {
-      var n = f + 1;
-      var totalN = n * n;
-      var sp3 = 14, pad4 = 10, cR2 = 5;
-      var svgW3 = n * sp3 + pad4 * 2, svgH3 = n * sp3 + pad4 * 2 + 20;
-      h += '<div class="pattern-fig"><svg width="' + svgW3 + '" height="' + svgH3 + '" viewBox="0 0 ' + svgW3 + ' ' + svgH3 + '">';
-      /* Draw n×n grid as triangle-ish layout */
-      var cellIdx = 0;
-      for (var row = 0; row < n; row++) {
-        for (var col = 0; col <= row; col++) {
-          var cx4 = pad4 + (svgW3 - pad4*2)/2 - row * sp3/2 + col * sp3;
-          var cy4 = pad4 + row * sp3 + sp3/2;
-          /* Alternate between white and grey based on pattern */
-          var isW;
-          if (isPyramid) isW = cellIdx >= triData[f].b;
-          else isW = cellIdx < triData[f].w;
-          h += '<circle cx="' + cx4 + '" cy="' + cy4 + '" r="' + cR2 + '" fill="' + (isW ? '#ffffff' : '#95a5a6') + '" stroke="' + (isW ? '#7f8c8d' : '#687078') + '" stroke-width="1.5"/>';
-          cellIdx++;
+    /* Q6: Original triangle pattern diagram is now inline in question text */
+    if (q.title.indexOf('Pyramid') >= 0) {
+      /* A6: PYRAMID PATTERN — keep existing viz for alternate question */
+      var triData = [{b:0,w:1},{b:1,w:3},{b:3,w:6},{b:6,w:10}];
+      for (var f = 0; f < 4; f++) {
+        var n = f + 1;
+        var totalN = n * n;
+        var sp3 = 14, pad4 = 10, cR2 = 5;
+        var svgW3 = n * sp3 + pad4 * 2, svgH3 = n * sp3 + pad4 * 2 + 20;
+        h += '<div class="pattern-fig"><svg width="' + svgW3 + '" height="' + svgH3 + '" viewBox="0 0 ' + svgW3 + ' ' + svgH3 + '">';
+        var cellIdx = 0;
+        for (var row = 0; row < n; row++) {
+          for (var col = 0; col <= row; col++) {
+            var cx4 = pad4 + (svgW3 - pad4*2)/2 - row * sp3/2 + col * sp3;
+            var cy4 = pad4 + row * sp3 + sp3/2;
+            var isW = cellIdx >= triData[f].b;
+            h += '<circle cx="' + cx4 + '" cy="' + cy4 + '" r="' + cR2 + '" fill="' + (isW ? '#ffffff' : '#95a5a6') + '" stroke="' + (isW ? '#7f8c8d' : '#687078') + '" stroke-width="1.5"/>';
+            cellIdx++;
+          }
         }
-      }
-      /* Fill remaining as squares in lower rows if needed */
-      for (var row2 = n; cellIdx < totalN; row2++) {
-        var colsInRow = Math.min(totalN - cellIdx, n);
-        for (var col2 = 0; col2 < colsInRow && cellIdx < totalN; col2++) {
-          var cx5 = pad4 + col2 * sp3 + sp3/2;
-          var cy5 = pad4 + row2 * sp3 + sp3/2;
-          var isW2 = isPyramid ? cellIdx >= triData[f].b : cellIdx < triData[f].w;
-          h += '<circle cx="' + cx5 + '" cy="' + cy5 + '" r="' + cR2 + '" fill="' + (isW2 ? '#ffffff' : '#95a5a6') + '" stroke="' + (isW2 ? '#7f8c8d' : '#687078') + '" stroke-width="1.5"/>';
-          cellIdx++;
+        for (var row2 = n; cellIdx < totalN; row2++) {
+          var colsInRow = Math.min(totalN - cellIdx, n);
+          for (var col2 = 0; col2 < colsInRow && cellIdx < totalN; col2++) {
+            var cx5 = pad4 + col2 * sp3 + sp3/2;
+            var cy5 = pad4 + row2 * sp3 + sp3/2;
+            var isW2 = cellIdx >= triData[f].b;
+            h += '<circle cx="' + cx5 + '" cy="' + cy5 + '" r="' + cR2 + '" fill="' + (isW2 ? '#ffffff' : '#95a5a6') + '" stroke="' + (isW2 ? '#7f8c8d' : '#687078') + '" stroke-width="1.5"/>';
+            cellIdx++;
+          }
         }
+        h += '<text x="' + (svgW3/2) + '" y="' + (svgH3 - 3) + '" text-anchor="middle" font-size="8" font-weight="700" fill="#7f8c8d">B:' + triData[f].b + ' W:' + triData[f].w + '</text>';
+        h += '</svg><div class="pattern-fig-label">Fig ' + (f + 1) + '</div></div>';
       }
-      var tLabel = isPyramid ? 'B:' + triData[f].b + ' W:' + triData[f].w : 'W:' + triData[f].w + ' G:' + triData[f].g;
-      h += '<text x="' + (svgW3/2) + '" y="' + (svgH3 - 3) + '" text-anchor="middle" font-size="8" font-weight="700" fill="#7f8c8d">' + tLabel + '</text>';
-      h += '</svg><div class="pattern-fig-label">Fig ' + (f + 1) + '</div></div>';
     }
+    /* else: original Q6 diagram is embedded inline after first sentence */
   }
 
   else if (q.n === 7 && q.tag === 'table-pattern') {
