@@ -1876,9 +1876,8 @@ function generatePDF() {
       }
       var jsPDF = window.jspdf.jsPDF;
       var doc = new jsPDF('p', 'mm', 'a4');
-      var W = 210, H = 297, M = 18;
+      var W = 210, H = 297, M = 16;
       var CW = W - 2 * M;
-      var y = 0;
 
       // ===== COVER =====
       doc.setFillColor(123, 45, 142);
@@ -1908,23 +1907,103 @@ function generatePDF() {
       doc.text('Date: ________________________________', M, 160);
       doc.text('Score: _________ / 10', M, 175);
 
-      // ===== ALTERNATE QUESTIONS =====
-      if (state.exportOpts.altQ) {
+      // ===== QUESTIONS (one page each) =====
+      function drawQuestionPage(qArr, qIdx, prefix) {
+        var q = qArr[qIdx];
+        var num = qIdx + 1;
+        var qLabel = prefix === 'orig' ? 'Q' : 'A';
         doc.addPage();
-        y = sectionHeader(doc, 'Practice Questions (Alternate)', M, W);
-        for (var i = 0; i < ALT.length; i++) {
-          if (y > H - 60) { doc.addPage(); y = M + 5; }
-          y = drawQ(doc, i + 1, ALT[i].text, y, M, CW);
+
+        // ── Header bar ──
+        doc.setFillColor(123, 45, 142);
+        doc.rect(0, 0, W, 14, 'F');
+        doc.setTextColor(255, 255, 255);
+        doc.setFontSize(10);
+        doc.setFont('helvetica', 'bold');
+        doc.text('Polymath Learning Centre  |  P6 Math Number Pattern  |  ' + qLabel + num, W / 2, 9.5, {align: 'center'});
+
+        var y = 22;
+
+        // ── Question number badge + title ──
+        doc.setFillColor(123, 45, 142);
+        doc.roundedRect(M, y - 4.5, 14, 9, 2, 2, 'F');
+        doc.setTextColor(255, 255, 255);
+        doc.setFontSize(10);
+        doc.text(qLabel + num, M + 7, y + 1.5, {align: 'center'});
+
+        doc.setTextColor(44, 62, 80);
+        doc.setFontSize(13);
+        doc.setFont('helvetica', 'bold');
+        doc.text(q.title, M + 18, y + 1.5);
+        y += 12;
+
+        // ── Question text ──
+        doc.setFontSize(10.5);
+        doc.setFont('helvetica', 'normal');
+        doc.setTextColor(44, 62, 80);
+        var textLines = doc.splitTextToSize(q.text.replace(/\n/g, ' '), CW);
+        for (var i = 0; i < textLines.length; i++) {
+          doc.text(textLines[i], M, y);
+          y += 5;
         }
+        y += 4;
+
+        // ── DIAGRAM ──
+        y = drawVizToPDF(doc, q, y, M, CW, W);
+        y += 4;
+
+        // ── TABLE ──
+        if (q.tableData) {
+          y = drawTableToPDF(doc, q.tableData, y, M, CW);
+          y += 4;
+        }
+
+        // ── Sub-questions with blanks OR single blank ──
+        if (q.subQs && q.subQs.length > 0) {
+          for (var s = 0; s < q.subQs.length; s++) {
+            doc.setFontSize(10.5);
+            doc.setFont('helvetica', 'normal');
+            doc.setTextColor(44, 62, 80);
+            var sqLines = doc.splitTextToSize(q.subQs[s], CW - 60);
+            for (var k = 0; k < sqLines.length; k++) {
+              doc.text(sqLines[k], M + 2, y);
+              y += 5;
+            }
+            // Answer line
+            doc.setFontSize(9);
+            doc.setTextColor(170, 170, 170);
+            doc.text('Ans: ________________________', M + 4, y);
+            y += 10;
+          }
+        } else {
+          // Single answer blank
+          doc.setFontSize(9);
+          doc.setTextColor(170, 170, 170);
+          doc.text('Ans: ________________________________________________', M, y);
+          y += 8;
+        }
+
+        // ── Working space label ──
+        y += 4;
+        doc.setDrawColor(200, 200, 200);
+        doc.setLineWidth(0.3);
+        doc.line(M, y, M + CW, y);
+        y += 5;
+        doc.setFontSize(9);
+        doc.setTextColor(180, 180, 180);
+        doc.setFont('helvetica', 'italic');
+        doc.text('Working space:', M, y);
       }
 
-      // ===== ORIGINAL QUESTIONS =====
+      // Generate question pages
+      if (state.exportOpts.altQ) {
+        for (var i = 0; i < ALT.length; i++) {
+          drawQuestionPage(ALT, i, 'alt');
+        }
+      }
       if (state.exportOpts.origQ) {
-        doc.addPage();
-        y = sectionHeader(doc, 'Original Questions', M, W);
         for (var i = 0; i < ORIG.length; i++) {
-          if (y > H - 60) { doc.addPage(); y = M + 5; }
-          y = drawQ(doc, i + 1, ORIG[i].text, y, M, CW);
+          drawQuestionPage(ORIG, i, 'orig');
         }
       }
 
@@ -1932,7 +2011,7 @@ function generatePDF() {
       if (state.exportOpts.ansKey) {
         if (state.exportOpts.altQ) {
           doc.addPage();
-          y = sectionHeader(doc, 'Answer Key - Alternate Questions', M, W);
+          var y = sectionHeader(doc, 'Answer Key - Alternate Questions', M, W);
           for (var i = 0; i < ALT.length; i++) {
             if (y > H - 55) { doc.addPage(); y = M + 5; }
             y = drawAnsKey(doc, i + 1, ALT[i], y, M, CW, H);
@@ -1940,7 +2019,7 @@ function generatePDF() {
         }
         if (state.exportOpts.origQ) {
           doc.addPage();
-          y = sectionHeader(doc, 'Answer Key - Original Questions', M, W);
+          var y = sectionHeader(doc, 'Answer Key - Original Questions', M, W);
           for (var i = 0; i < ORIG.length; i++) {
             if (y > H - 55) { doc.addPage(); y = M + 5; }
             y = drawAnsKey(doc, i + 1, ORIG[i], y, M, CW, H);
@@ -1953,8 +2032,9 @@ function generatePDF() {
       for (var p = 1; p <= totalP; p++) {
         doc.setPage(p);
         doc.setFontSize(8);
+        doc.setFont('helvetica', 'normal');
         doc.setTextColor(180, 180, 180);
-        doc.text('Polymath Learning Centre | P6 Math Number Pattern | Page ' + p + '/' + totalP, W / 2, H - 8, {align: 'center'});
+        doc.text('Polymath Learning Centre | P6 Math Number Pattern | Page ' + p + '/' + totalP, W / 2, H - 6, {align: 'center'});
       }
 
       doc.save('P6_Math_Number_Pattern_Worksheet.pdf');
@@ -1968,6 +2048,502 @@ function generatePDF() {
   }, 200);
 }
 
+/* ==========================================================
+   PDF: DRAW TABLE
+   ========================================================== */
+function drawTableToPDF(doc, td, y, M, CW) {
+  var cols = td.headers.length;
+  var colW = CW / cols;
+  var rowH = 7;
+
+  // Header row
+  doc.setFillColor(123, 45, 142);
+  doc.rect(M, y, CW, rowH, 'F');
+  doc.setTextColor(255, 255, 255);
+  doc.setFontSize(8.5);
+  doc.setFont('helvetica', 'bold');
+  for (var c = 0; c < cols; c++) {
+    doc.text(String(td.headers[c]), M + c * colW + colW / 2, y + 5, {align: 'center'});
+  }
+  y += rowH;
+
+  // Data rows
+  for (var r = 0; r < td.rows.length; r++) {
+    var row = td.rows[r];
+    var isLast = (r === td.rows.length - 1);
+    if (isLast && String(row[row.length - 1]) === '?') {
+      doc.setFillColor(255, 243, 224);
+    } else {
+      doc.setFillColor(r % 2 === 0 ? 248 : 240, r % 2 === 0 ? 249 : 242, r % 2 === 0 ? 252 : 247);
+    }
+    doc.rect(M, y, CW, rowH, 'F');
+    doc.setTextColor(44, 62, 80);
+    doc.setFontSize(8.5);
+    doc.setFont('helvetica', 'normal');
+    for (var c = 0; c < row.length; c++) {
+      var cellText = String(row[c]);
+      if (isLast && cellText === '?') {
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(230, 0, 126);
+      }
+      doc.text(cellText, M + c * colW + colW / 2, y + 5, {align: 'center'});
+      doc.setFont('helvetica', 'normal');
+      doc.setTextColor(44, 62, 80);
+    }
+    y += rowH;
+  }
+
+  // Border
+  doc.setDrawColor(200, 200, 200);
+  doc.setLineWidth(0.3);
+  var totalH = rowH * (td.rows.length + 1);
+  doc.rect(M, y - totalH, CW, totalH);
+  // Vertical lines
+  for (var c = 1; c < cols; c++) {
+    doc.line(M + c * colW, y - totalH, M + c * colW, y);
+  }
+  // Horizontal lines
+  for (var r = 0; r <= td.rows.length; r++) {
+    doc.line(M, y - totalH + r * rowH, M + CW, y - totalH + r * rowH);
+  }
+
+  return y + 2;
+}
+
+/* ==========================================================
+   PDF: DRAW VISUALIZATIONS
+   ========================================================== */
+function drawVizToPDF(doc, q, y, M, CW, W) {
+  var startY = y;
+  var cx0 = W / 2; /* center x of page */
+
+  /* Helper: draw a filled circle */
+  function pdfCircle(x, yy, r, fillR, fillG, fillB, strokeR, strokeG, strokeB) {
+    doc.setFillColor(fillR, fillG, fillB);
+    doc.setDrawColor(strokeR || 100, strokeG || 100, strokeB || 100);
+    doc.setLineWidth(0.3);
+    doc.circle(x, yy, r, 'FD');
+  }
+
+  /* Helper: draw a filled rect */
+  function pdfRect(x, yy, w, hh, fillR, fillG, fillB, strokeR, strokeG, strokeB) {
+    doc.setFillColor(fillR, fillG, fillB);
+    doc.setDrawColor(strokeR || 100, strokeG || 100, strokeB || 100);
+    doc.setLineWidth(0.3);
+    doc.rect(x, yy, w, hh, 'FD');
+  }
+
+  /* Shared: draw figure label below a figure */
+  function figLabel(x, yy, label) {
+    doc.setFontSize(7.5);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(120, 120, 120);
+    doc.text(label, x, yy, {align: 'center'});
+  }
+
+  // ======= Q1: DOTS & LINES GRID =======
+  if (q.n === 1 && q.tag === 'table-pattern') {
+    var isStars = (q.title.indexOf('Stars') >= 0);
+    var figData = isStars
+      ? [{r:2,c:3},{r:3,c:4},{r:4,c:5},{r:5,c:6}]
+      : [{r:1,c:2},{r:2,c:3},{r:3,c:4},{r:4,c:5}];
+    var sp = 5, dotR = 1.2;
+    var totalW = 0;
+    for (var f = 0; f < figData.length; f++) totalW += figData[f].c * sp + 12;
+    var xOff = (W - totalW) / 2;
+
+    for (var f = 0; f < figData.length; f++) {
+      var fd = figData[f];
+      var figW = fd.c * sp;
+      var figCx = xOff + figW / 2;
+      // Lines
+      doc.setDrawColor(180, 130, 200);
+      doc.setLineWidth(0.25);
+      for (var row = 0; row < fd.r; row++) {
+        for (var col = 0; col < fd.c; col++) {
+          var dx = xOff + col * sp, dy = y + row * sp;
+          if (col < fd.c - 1) doc.line(dx, dy, dx + sp, dy);
+          if (row < fd.r - 1) doc.line(dx, dy, dx, dy + sp);
+        }
+      }
+      // Dots
+      for (var row = 0; row < fd.r; row++) {
+        for (var col = 0; col < fd.c; col++) {
+          pdfCircle(xOff + col * sp, y + row * sp, dotR, 123, 45, 142, 123, 45, 142);
+        }
+      }
+      figLabel(figCx, y + fd.r * sp + 4, 'Fig ' + (f + 1));
+      xOff += figW + 12;
+    }
+    y += figData[figData.length - 1].r * sp + 8;
+  }
+
+  // ======= Q2: QUEUE SERPENTINE =======
+  else if (q.n === 2 && q.tag === 'grid-pattern') {
+    var cols = (q.title.indexOf('Cinema') >= 0) ? 6 : 4;
+    var cellSz = 5.5, cr = 2.2;
+    var gw = cols * cellSz;
+    var gx = (W - gw) / 2;
+    var nums = [];
+    for (var row = 0; row < 4; row++) {
+      if (row % 2 === 0) { for (var c = 0; c < cols; c++) nums.push(row * cols + c + 1); }
+      else { for (var c = cols - 1; c >= 0; c--) nums.push(row * cols + c + 1); }
+    }
+    var idx = 0;
+    for (var row = 0; row < 4; row++) {
+      for (var col = 0; col < cols; col++) {
+        var cx = gx + col * cellSz + cellSz / 2;
+        var cy = y + row * cellSz + cellSz / 2;
+        var isEvenRow = (row % 2 === 0);
+        pdfCircle(cx, cy, cr, isEvenRow ? 249 : 0, isEvenRow ? 168 : 180, isEvenRow ? 37 : 216, 200, 200, 200);
+        doc.setTextColor(255, 255, 255);
+        doc.setFontSize(5.5);
+        doc.setFont('helvetica', 'bold');
+        doc.text(String(nums[idx]), cx, cy + 1, {align: 'center'});
+        idx++;
+      }
+    }
+    figLabel(W / 2, y + 4 * cellSz + 4, cols + '-column serpentine queue');
+    y += 4 * cellSz + 8;
+  }
+
+  // ======= Q3: COMPLETE GRAPH / POLYGON DIAGONALS =======
+  else if (q.n === 3 && q.tag === 'formula-pattern') {
+    var isPolygon = (q.title.indexOf('Diagonal') >= 0 || q.title.indexOf('Polygon') >= 0);
+    var startN = isPolygon ? 3 : 2;
+    var figCount = 4;
+    var figSp = CW / figCount;
+
+    for (var f = 0; f < figCount; f++) {
+      var n = startN + f;
+      var rad = 8, cRad = 1.3;
+      var fcx = M + f * figSp + figSp / 2;
+      var fcy = y + 10;
+      var pts = [];
+      for (var p = 0; p < n; p++) {
+        var angle = -Math.PI / 2 + (2 * Math.PI * p / n);
+        pts.push({x: fcx + rad * Math.cos(angle), y: fcy + rad * Math.sin(angle)});
+      }
+      // Lines
+      doc.setDrawColor(0, 180, 216);
+      doc.setLineWidth(0.2);
+      for (var a = 0; a < n; a++) {
+        for (var b = a + 1; b < n; b++) {
+          doc.line(pts[a].x, pts[a].y, pts[b].x, pts[b].y);
+        }
+      }
+      // Circles
+      for (var p = 0; p < n; p++) {
+        pdfCircle(pts[p].x, pts[p].y, cRad, 123, 45, 142, 123, 45, 142);
+      }
+      figLabel(fcx, y + 22, 'Fig ' + (f + 1));
+    }
+    y += 26;
+  }
+
+  // ======= Q4: SQUARES & CIRCLES (L-shape) =======
+  else if (q.tag === 'perfect-sq') {
+    var figs = [{n:1},{n:2},{n:3},{n:4}];
+    var cellSz = 5, figSp = CW / 4;
+
+    for (var f = 0; f < figs.length; f++) {
+      var gridN = figs[f].n;
+      var gw = gridN * cellSz;
+      var gx = M + f * figSp + (figSp - gw) / 2;
+      var gy = y;
+
+      for (var row = 0; row < gridN; row++) {
+        for (var col = 0; col < gridN; col++) {
+          var cx = gx + col * cellSz;
+          var cy = gy + row * cellSz;
+          var isBottom = (row === gridN - 1);
+          var isLeft = (col === 0);
+          if (isBottom || isLeft) {
+            pdfRect(cx + 0.3, cy + 0.3, cellSz - 0.6, cellSz - 0.6, 168, 216, 234, 74, 144, 164);
+          } else {
+            pdfCircle(cx + cellSz / 2, cy + cellSz / 2, cellSz / 2 - 0.8, 248, 187, 208, 228, 138, 167);
+          }
+        }
+      }
+      figLabel(gx + gw / 2, gy + gridN * cellSz + 3.5, 'Fig ' + (f + 1));
+    }
+    y += 4 * cellSz + 7;
+  }
+
+  // ======= Q5: WHITE & GREY CIRCLES (triangle) =======
+  else if (q.tag === 'alternating') {
+    var isAlt = (q.title.indexOf('Red') >= 0);
+    var figRows = [2, 3, 4];
+    var cR = 2, sp2 = 5.5;
+    var figSp = CW / 3;
+    var wFill = isAlt ? [231, 76, 60] : [255, 255, 255];
+    var gFill = isAlt ? [33, 150, 243] : [149, 165, 166];
+    var wStr = isAlt ? [192, 57, 43] : [85, 85, 85];
+    var gStr = isAlt ? [21, 101, 192] : [85, 85, 85];
+
+    for (var f = 0; f < figRows.length; f++) {
+      var nRows = figRows[f];
+      var maxCols = nRows;
+      var figW = maxCols * sp2;
+      var fcx = M + f * figSp + figSp / 2;
+      var figTop = y;
+
+      for (var row = 1; row <= nRows; row++) {
+        var numInRow = row;
+        var rowW = numInRow * sp2;
+        var xStart = fcx - rowW / 2 + sp2 / 2;
+        var cy = figTop + (row - 1) * sp2 + sp2 / 2;
+        var isOddRow = (row % 2 === 1);
+        var isWhiteRow = isAlt ? !isOddRow : isOddRow;
+        for (var col = 0; col < numInRow; col++) {
+          var cx = xStart + col * sp2;
+          if (isWhiteRow) {
+            pdfCircle(cx, cy, cR, wFill[0], wFill[1], wFill[2], wStr[0], wStr[1], wStr[2]);
+          } else {
+            pdfCircle(cx, cy, cR, gFill[0], gFill[1], gFill[2], gStr[0], gStr[1], gStr[2]);
+          }
+        }
+      }
+      figLabel(fcx, figTop + nRows * sp2 + 3, 'Fig ' + (f + 1));
+    }
+    y += figRows[figRows.length - 1] * sp2 + 7;
+  }
+
+  // ======= Q6: TRIANGLE PATTERN =======
+  else if (q.n === 6 && q.tag === 'formula-pattern') {
+    var isPyramid = (q.title.indexOf('Pyramid') >= 0);
+    var figSp = CW / 4;
+    var cR = 1.8, sp2 = 5;
+
+    for (var f = 0; f < 4; f++) {
+      var n = f + 1;
+      var totalN = n * n;
+      var maxRow = n;
+      var fcx = M + f * figSp + figSp / 2;
+      var figTop = y;
+
+      var idx = 0;
+      for (var row = 1; row <= maxRow * 2 - 1; row++) {
+        var numInRow = row <= maxRow ? row : maxRow * 2 - row;
+        var rowW = numInRow * sp2;
+        var xStart = fcx - rowW / 2 + sp2 / 2;
+        var cy = figTop + (row - 1) * (sp2 * 0.7);
+        for (var col = 0; col < numInRow && idx < totalN; col++) {
+          var cx = xStart + col * sp2;
+          var isWhite = isPyramid ? (idx >= n * (n - 1) / 2) : (idx < n);
+          if (isWhite) {
+            pdfCircle(cx, cy, cR, 255, 255, 255, 85, 85, 85);
+          } else {
+            pdfCircle(cx, cy, cR, 149, 165, 166, 85, 85, 85);
+          }
+          idx++;
+        }
+      }
+      figLabel(fcx, figTop + (maxRow * 2 - 1) * sp2 * 0.7 + 3, 'Fig ' + (f + 1));
+    }
+    y += 7 * sp2 * 0.7 + 7;
+  }
+
+  // ======= Q7: TRIANGLES & SQUARES =======
+  else if (q.n === 7) {
+    var figSp = CW / 4;
+    var sz = 4;
+    for (var f = 0; f < 4; f++) {
+      var nTri = f + 2, nSq = (f + 1) * (f + 2) / 2;
+      var fcx = M + f * figSp + figSp / 2;
+      var totalShapes = Math.min(nTri + nSq, 15);
+      var cols2 = Math.ceil(Math.sqrt(totalShapes));
+      var rows2 = Math.ceil(totalShapes / cols2);
+      var gw = cols2 * (sz + 1);
+      var gx = fcx - gw / 2;
+      var drawn = 0;
+      for (var row = 0; row < rows2 && drawn < totalShapes; row++) {
+        for (var col = 0; col < cols2 && drawn < totalShapes; col++) {
+          var cx = gx + col * (sz + 1) + sz / 2;
+          var cy = y + row * (sz + 1) + sz / 2;
+          if (drawn < nTri) {
+            /* Triangle */
+            doc.setFillColor(230, 0, 126);
+            doc.setDrawColor(200, 0, 100);
+            doc.setLineWidth(0.2);
+            doc.triangle(cx, cy - sz/2, cx - sz/2, cy + sz/2, cx + sz/2, cy + sz/2, 'FD');
+          } else {
+            /* Square */
+            pdfRect(cx - sz/2, cy - sz/2, sz, sz, 0, 180, 216, 0, 140, 180);
+          }
+          drawn++;
+        }
+      }
+      figLabel(fcx, y + rows2 * (sz + 1) + 3, 'Fig ' + (f + 1));
+    }
+    y += 5 * (sz + 1) + 6;
+  }
+
+  // ======= Q8: STICK STRUCTURES =======
+  else if (q.n === 8) {
+    var structures = [{w:1,h:1},{w:2,h:1},{w:3,h:1},{w:1,h:2},{w:2,h:2},{w:3,h:2}];
+    var figSp = CW / 6;
+    var cubeW = 4, cubeH = 3.5, isoX = 1.5, isoY = 1;
+
+    for (var f = 0; f < structures.length; f++) {
+      var s = structures[f];
+      var fcx = M + f * figSp + figSp / 2;
+      var baseX = fcx - (s.w * cubeW + s.w * isoX) / 2;
+      var baseY = y + 18;
+
+      for (var layer = 0; layer < s.h; layer++) {
+        for (var col = 0; col < s.w; col++) {
+          var bx = baseX + col * cubeW;
+          var by = baseY - layer * cubeH;
+          /* Front face */
+          pdfRect(bx, by - cubeH, cubeW, cubeH, 0, 180, 216, 0, 140, 180);
+          /* Top face (parallelogram approximated as rect) */
+          doc.setFillColor(100, 200, 230);
+          doc.setDrawColor(0, 140, 180);
+          doc.setLineWidth(0.15);
+          var topPts = [bx, by - cubeH, bx + isoX, by - cubeH - isoY, bx + cubeW + isoX, by - cubeH - isoY, bx + cubeW, by - cubeH];
+          doc.line(topPts[0], topPts[1], topPts[2], topPts[3]);
+          doc.line(topPts[2], topPts[3], topPts[4], topPts[5]);
+          doc.line(topPts[4], topPts[5], topPts[6], topPts[7]);
+          /* Right face */
+          doc.setDrawColor(0, 140, 180);
+          doc.line(bx + cubeW, by - cubeH, bx + cubeW + isoX, by - cubeH - isoY);
+          doc.line(bx + cubeW + isoX, by - cubeH - isoY, bx + cubeW + isoX, by - isoY);
+          doc.line(bx + cubeW + isoX, by - isoY, bx + cubeW, by);
+        }
+      }
+      figLabel(fcx, baseY + 4, 'Str ' + (f + 1));
+    }
+    y += 28;
+  }
+
+  // ======= Q9: CUBE STAIRCASE =======
+  else if (q.n === 9) {
+    var figSp = CW / 4;
+    var cubeW = 3.5, cubeH = 3, isoX = 1.2, isoY = 0.8;
+
+    for (var f = 0; f < 4; f++) {
+      var n = f + 1;
+      var fcx = M + f * figSp + figSp / 2;
+      var baseY = y + 22;
+      var baseX = fcx - (n * cubeW + n * isoX) / 2;
+
+      for (var layer = 0; layer < n; layer++) {
+        var colsInLayer = n - layer;
+        var lx = baseX;
+        var ly = baseY - layer * cubeH;
+        for (var col = 0; col < colsInLayer; col++) {
+          var bx = lx + col * cubeW;
+          var by = ly;
+          var shade = 180 + layer * 20;
+          pdfRect(bx, by - cubeH, cubeW, cubeH, 0, Math.min(shade, 230), Math.min(shade + 30, 255), 0, 140, 180);
+          // Top line
+          doc.setDrawColor(0, 140, 180);
+          doc.setLineWidth(0.15);
+          doc.line(bx, by - cubeH, bx + isoX, by - cubeH - isoY);
+          doc.line(bx + isoX, by - cubeH - isoY, bx + cubeW + isoX, by - cubeH - isoY);
+          doc.line(bx + cubeW + isoX, by - cubeH - isoY, bx + cubeW, by - cubeH);
+          // Right line
+          doc.line(bx + cubeW, by - cubeH, bx + cubeW + isoX, by - cubeH - isoY);
+          doc.line(bx + cubeW + isoX, by - cubeH - isoY, bx + cubeW + isoX, by - isoY);
+          doc.line(bx + cubeW + isoX, by - isoY, bx + cubeW, by);
+        }
+      }
+      figLabel(fcx, baseY + 4, 'Fig ' + (f + 1));
+    }
+    y += 30;
+  }
+
+  // ======= Q10: MATCHSTICK PATTERNS =======
+  else if (q.n === 10) {
+    var isTriangle = (q.title.indexOf('Triangle') >= 0);
+    var figSp = CW / 4;
+    var stickLen = 5;
+
+    if (!isTriangle) {
+      // Square matchstick patterns
+      var sqFigs = [
+        [{x:0,y:0}], // 1 square
+        [{x:0,y:0},{x:1,y:0}], // 2 squares
+        [{x:0,y:0},{x:1,y:0},{x:0,y:1}], // 3 squares (L)
+        [{x:0,y:0},{x:1,y:0},{x:0,y:1},{x:1,y:1}] // 2x2
+      ];
+      for (var f = 0; f < sqFigs.length; f++) {
+        var fcx = M + f * figSp + figSp / 2;
+        var cells = sqFigs[f];
+        var maxX = 0, maxY = 0;
+        for (var c = 0; c < cells.length; c++) {
+          if (cells[c].x > maxX) maxX = cells[c].x;
+          if (cells[c].y > maxY) maxY = cells[c].y;
+        }
+        var gx = fcx - (maxX + 1) * stickLen / 2;
+        var gy = y;
+        doc.setDrawColor(123, 45, 142);
+        doc.setLineWidth(0.5);
+        for (var c = 0; c < cells.length; c++) {
+          var sx = gx + cells[c].x * stickLen, sy = gy + cells[c].y * stickLen;
+          doc.rect(sx, sy, stickLen, stickLen); // draws 4 sides
+        }
+        // Joint dots
+        doc.setFillColor(230, 0, 126);
+        for (var c = 0; c < cells.length; c++) {
+          var sx = gx + cells[c].x * stickLen, sy = gy + cells[c].y * stickLen;
+          doc.circle(sx, sy, 0.5, 'F');
+          doc.circle(sx + stickLen, sy, 0.5, 'F');
+          doc.circle(sx, sy + stickLen, 0.5, 'F');
+          doc.circle(sx + stickLen, sy + stickLen, 0.5, 'F');
+        }
+        figLabel(fcx, gy + (maxY + 1) * stickLen + 4, 'Fig ' + (f + 1));
+      }
+      y += 2 * stickLen + 8;
+    } else {
+      // Triangle matchstick patterns
+      var triFigs = [1, 3, 6, 10]; // number of small triangles
+      for (var f = 0; f < 4; f++) {
+        var fcx = M + f * figSp + figSp / 2;
+        var rows = f + 1;
+        var triH = stickLen * 0.866;
+        var gw = rows * stickLen;
+        var gx = fcx - gw / 2;
+        var gy = y;
+        doc.setDrawColor(123, 45, 142);
+        doc.setLineWidth(0.5);
+        for (var row = 0; row < rows; row++) {
+          var numUp = row + 1; // upward triangles
+          for (var t = 0; t < numUp; t++) {
+            var bx = gx + (rows - row - 1) * stickLen / 2 + t * stickLen;
+            var by = gy + row * triH;
+            doc.line(bx, by + triH, bx + stickLen, by + triH); // base
+            doc.line(bx, by + triH, bx + stickLen / 2, by); // left
+            doc.line(bx + stickLen / 2, by, bx + stickLen, by + triH); // right
+          }
+          // Downward triangles
+          if (row > 0) {
+            for (var t = 0; t < row; t++) {
+              var bx = gx + (rows - row) * stickLen / 2 + t * stickLen + stickLen / 2;
+              var by = gy + (row - 1) * triH;
+              doc.line(bx, by + triH, bx + stickLen, by + triH);
+            }
+          }
+        }
+        figLabel(fcx, gy + rows * triH + 4, 'Fig ' + (f + 1));
+      }
+      y += 4 * stickLen * 0.866 + 8;
+    }
+  }
+
+  // ======= FALLBACK: no specific viz =======
+  else {
+    doc.setFontSize(8);
+    doc.setTextColor(170, 170, 170);
+    doc.setFont('helvetica', 'italic');
+    doc.text('[See diagram in app]', W / 2, y + 4, {align: 'center'});
+    y += 10;
+  }
+
+  return y;
+}
+
 function sectionHeader(doc, title, M, W) {
   doc.setFillColor(123, 45, 142);
   doc.rect(M, 14, W - 2 * M, 12, 'F');
@@ -1976,31 +2552,6 @@ function sectionHeader(doc, title, M, W) {
   doc.setFont('helvetica', 'bold');
   doc.text(title, W / 2, 22, {align: 'center'});
   return 36;
-}
-
-function drawQ(doc, num, text, y, M, CW) {
-  doc.setFillColor(123, 45, 142);
-  doc.circle(M + 5, y, 3.5, 'F');
-  doc.setTextColor(255, 255, 255);
-  doc.setFontSize(8);
-  doc.setFont('helvetica', 'bold');
-  doc.text(String(num), M + 5, y + 1, {align: 'center'});
-
-  doc.setTextColor(44, 62, 80);
-  doc.setFontSize(10.5);
-  doc.setFont('helvetica', 'normal');
-  var cleanText = text.replace(/\n/g, ' ');
-  var lines = doc.splitTextToSize(cleanText, CW - 16);
-  for (var i = 0; i < lines.length; i++) {
-    doc.text(lines[i], M + 12, y + 1 + i * 5);
-  }
-  y += lines.length * 5 + 4;
-
-  doc.setFontSize(9);
-  doc.setTextColor(150, 150, 150);
-  doc.text('Ans: ________________', M + 12, y);
-  y += 14;
-  return y;
 }
 
 function drawAnsKey(doc, num, q, y, M, CW, H) {
