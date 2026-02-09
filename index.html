@@ -1282,32 +1282,35 @@ function buildViz(q, qi, prefix) {
   }
 
   else if (q.tag === 'alternating') {
-    /* Q5 / A5: WHITE & GREY CIRCLES — rows of alternating white and grey circles */
-    var wgData = (q.title.indexOf('Red') >= 0)
+    /* Q5 / A5: WHITE & GREY CIRCLES — triangular pyramid with alternating row colours */
+    var isRed = (q.title.indexOf('Red') >= 0);
+    var wgData = isRed
       ? [{w:2,g:1},{w:2,g:4},{w:6,g:4},{w:6,g:9},{w:12,g:9}]
       : [{w:1,g:2},{w:4,g:2},{w:4,g:6},{w:9,g:6},{w:9,g:12}];
-    var wLabel = (q.title.indexOf('Red') >= 0) ? 'R' : 'W';
-    var gLabel = (q.title.indexOf('Red') >= 0) ? 'B' : 'G';
-    var wColor = (q.title.indexOf('Red') >= 0) ? '#e74c3c' : '#ffffff';
-    var gColor = (q.title.indexOf('Red') >= 0) ? '#2196f3' : '#95a5a6';
-    var wStroke = (q.title.indexOf('Red') >= 0) ? '#c0392b' : '#7f8c8d';
+    var wLabel = isRed ? 'R' : 'W';
+    var gLabel = isRed ? 'B' : 'G';
+    var wColor = isRed ? '#e74c3c' : '#ffffff';
+    var gColor = isRed ? '#2196f3' : '#95a5a6';
+    var wStroke = isRed ? '#c0392b' : '#7f8c8d';
     for (var f = 0; f < 5; f++) {
-      var d = wgData[f], total = d.w + d.g;
-      var cols2 = Math.min(total, Math.ceil(Math.sqrt(total)));
-      var rows2 = Math.ceil(total / cols2);
+      var numRows = f + 2; /* Fig 1 → 2 rows, Fig 2 → 3 rows, etc. */
       var cR = 6, sp2 = 16, pad3 = 10;
-      var svgW2 = cols2 * sp2 + pad3 * 2, svgH2 = rows2 * sp2 + pad3 * 2 + 20;
+      var svgW2 = numRows * sp2 + pad3 * 2;
+      var svgH2 = numRows * sp2 + pad3 * 2 + 20;
       h += '<div class="pattern-fig"><svg width="' + svgW2 + '" height="' + svgH2 + '" viewBox="0 0 ' + svgW2 + ' ' + svgH2 + '">';
-      var drawn = 0;
-      /* Draw white circles first, then grey */
-      for (var row = 0; row < rows2 && drawn < total; row++) {
-        for (var col = 0; col < cols2 && drawn < total; col++) {
-          var cx3 = pad3 + col * sp2 + sp2/2, cy3 = pad3 + row * sp2 + sp2/2;
-          var isWhite = drawn < d.w;
-          h += '<circle cx="' + cx3 + '" cy="' + cy3 + '" r="' + cR + '" fill="' + (isWhite ? wColor : gColor) + '" stroke="' + (isWhite ? wStroke : '#687078') + '" stroke-width="1.5"/>';
-          drawn++;
+      for (var row = 0; row < numRows; row++) {
+        var circlesInRow = row + 1;
+        var rowWidth = circlesInRow * sp2;
+        var startX = (svgW2 - rowWidth) / 2 + sp2 / 2;
+        /* Normal: even rows white, odd rows grey.  Red variant: even rows blue(g), odd rows red(w) */
+        var isWhiteRow = isRed ? (row % 2 === 1) : (row % 2 === 0);
+        for (var col = 0; col < circlesInRow; col++) {
+          var cx3 = startX + col * sp2;
+          var cy3 = pad3 + row * sp2 + sp2 / 2;
+          h += '<circle cx="' + cx3 + '" cy="' + cy3 + '" r="' + cR + '" fill="' + (isWhiteRow ? wColor : gColor) + '" stroke="' + (isWhiteRow ? wStroke : '#687078') + '" stroke-width="1.5"/>';
         }
       }
+      var d = wgData[f];
       h += '<text x="' + (svgW2/2) + '" y="' + (svgH2 - 3) + '" text-anchor="middle" font-size="8" font-weight="700" fill="#7f8c8d">' + wLabel + ':' + d.w + ' ' + gLabel + ':' + d.g + '</text>';
       h += '</svg><div class="pattern-fig-label">Fig ' + (f + 1) + '</div></div>';
     }
