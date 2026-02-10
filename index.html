@@ -65,10 +65,8 @@ body {
 }
 .logo-area { display: flex; align-items: center; gap: 14px; }
 .logo-icon {
-  width: 36px; height: 36px; background: #1a1a1a; border-radius: 3px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 16px; font-weight: 700; color: #fff;
-  font-family: 'Century Gothic', 'AppleGothic', sans-serif;
+  width: 36px; height: 36px; border-radius: 3px;
+  object-fit: contain;
 }
 .logo-text { color: #1a1a1a; font-family: 'Century Gothic', 'AppleGothic', sans-serif; }
 .logo-text h1 { font-size: 16px; font-weight: 700; line-height: 1.1; letter-spacing: 3px; text-transform: uppercase; }
@@ -640,7 +638,7 @@ body {
 <header class="header">
   <div class="header-inner">
     <div class="logo-area">
-      <div class="logo-icon">P</div>
+      <img class="logo-icon" src="https://www.dropbox.com/scl/fi/h40yjlyg8ldefwfaa3dib/polymath-logo-sticker.png?rlkey=o1ra4taqy79gt9t8u096v82zj&raw=1" alt="Polymath">
       <div class="logo-text"><h1>POLYMATH</h1><span>Learning Centre</span></div>
     </div>
     <div class="header-actions">
@@ -1594,19 +1592,19 @@ function buildViz(q, qi, prefix) {
 
   else if (q.tag === 'special-set') {
     /* Q8 / A8: STICK STRUCTURES — wireframe 3D cubes (no fill, sticks only).
-       w = cubes across, d = cubes deep (front-to-back rows).
-       Isometric view: depth shifts right + up. All edges visible. */
+       w = cubes across (width), h = cubes stacked vertically (height layers).
+       Isometric view: single cube depth shown with dX/dY offset. */
     var groupSize = (q.title.indexOf('Rod') >= 0) ? 4 : 3;
     var structures = [];
     if (groupSize === 3) {
       structures = [
-        {w:1,d:1},{w:2,d:1},{w:3,d:1},
-        {w:1,d:2},{w:2,d:2},{w:3,d:2}
+        {w:1,h:1},{w:2,h:1},{w:3,h:1},
+        {w:1,h:2},{w:2,h:2},{w:3,h:2}
       ];
     } else {
       structures = [
-        {w:1,d:1},{w:2,d:1},{w:3,d:1},{w:4,d:1},
-        {w:1,d:2},{w:2,d:2}
+        {w:1,h:1},{w:2,h:1},{w:3,h:1},{w:4,h:1},
+        {w:1,h:2},{w:2,h:2}
       ];
     }
     var cW = 24, cH = 24, dX = 12, dY = 10;
@@ -1614,15 +1612,15 @@ function buildViz(q, qi, prefix) {
     var showN = Math.min(structures.length, 6);
     for (var f = 0; f < showN; f++) {
       var st = structures[f];
-      var svgW5 = st.w * cW + (st.d - 1) * dX + dX + pad9 * 2;
-      var svgH5 = cH + (st.d - 1) * dY + dY + pad9 * 2;
+      var svgW5 = st.w * cW + dX + pad9 * 2;
+      var svgH5 = st.h * cH + dY + pad9 * 2;
       var baseY = svgH5 - pad9;
       h += '<div class="pattern-fig"><svg width="' + svgW5 + '" height="' + svgH5 + '" viewBox="0 0 ' + svgW5 + ' ' + svgH5 + '">';
-      /* Draw back-to-front so front overlaps back (though wireframe so it doesn't matter) */
-      for (var row = st.d - 1; row >= 0; row--) {
+      /* Draw bottom-to-top, left-to-right */
+      for (var layer = 0; layer < st.h; layer++) {
         for (var col = 0; col < st.w; col++) {
-          var sx = pad9 + col * cW + row * dX;
-          var sy = baseY - row * dY;
+          var sx = pad9 + col * cW;
+          var sy = baseY - layer * cH;
           /* 8 vertices: front face (f) and back face (b), bottom (b) and top (t), left (l) and right (r) */
           var fbl_x = sx, fbl_y = sy;
           var fbr_x = sx + cW, fbr_y = sy;
