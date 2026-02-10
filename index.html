@@ -1593,46 +1593,61 @@ function buildViz(q, qi, prefix) {
   }
 
   else if (q.tag === 'special-set') {
-    /* Q8 / A8: STICK STRUCTURES — 3D cube-like structures made of lines (sticks) */
+    /* Q8 / A8: STICK STRUCTURES — wireframe 3D cubes (no fill, sticks only).
+       w = cubes across, d = cubes deep (front-to-back rows).
+       Isometric view: depth shifts right + up. All edges visible. */
     var groupSize = (q.title.indexOf('Rod') >= 0) ? 4 : 3;
-    var unitH = (q.title.indexOf('Rod') >= 0) ? 3 : 2;
     var structures = [];
     if (groupSize === 3) {
       structures = [
-        {w:1,h:1,sticks:12},{w:2,h:1,sticks:20},{w:3,h:1,sticks:28},
-        {w:1,h:2,sticks:36},{w:2,h:2,sticks:41},{w:3,h:2,sticks:46}
+        {w:1,d:1},{w:2,d:1},{w:3,d:1},
+        {w:1,d:2},{w:2,d:2},{w:3,d:2}
       ];
     } else {
       structures = [
-        {w:1,h:1,sticks:10},{w:2,h:1,sticks:16},{w:3,h:1,sticks:22},{w:4,h:1,sticks:28},
-        {w:1,h:2,sticks:34},{w:2,h:2,sticks:38}
+        {w:1,d:1},{w:2,d:1},{w:3,d:1},{w:4,d:1},
+        {w:1,d:2},{w:2,d:2}
       ];
     }
+    var cW = 24, cH = 24, dX = 12, dY = 10;
+    var pad9 = 8;
     var showN = Math.min(structures.length, 6);
     for (var f = 0; f < showN; f++) {
       var st = structures[f];
-      var cubeW = 22, cubeH = 18, isoX = 8, isoY = 6;
-      var svgW5 = st.w * cubeW + isoX + 20, svgH5 = st.h * cubeH + isoY + 32;
+      var svgW5 = st.w * cW + (st.d - 1) * dX + dX + pad9 * 2;
+      var svgH5 = cH + (st.d - 1) * dY + dY + pad9 * 2;
+      var baseY = svgH5 - pad9;
       h += '<div class="pattern-fig"><svg width="' + svgW5 + '" height="' + svgH5 + '" viewBox="0 0 ' + svgW5 + ' ' + svgH5 + '">';
-      /* Draw stacked cubes as isometric-ish rectangles with sticks */
-      for (var ly = st.h - 1; ly >= 0; ly--) {
-        for (var lx = 0; lx < st.w; lx++) {
-          var bx = 8 + lx * cubeW;
-          var by = 4 + (st.h - 1 - ly) * cubeH;
-          var groupIdx = Math.floor(f / groupSize);
-          var clr = ['#333', '#666', '#999', '#bbb'][groupIdx % 4];
-          /* Front face */
-          h += '<rect x="' + bx + '" y="' + (by + isoY) + '" width="' + cubeW + '" height="' + cubeH + '" fill="' + clr + '" stroke="white" stroke-width="1.5" opacity="0.85"/>';
-          /* Top face (parallelogram as polygon) */
-          var topPts = bx + ',' + (by + isoY) + ' ' + (bx + isoX) + ',' + by + ' ' + (bx + cubeW + isoX) + ',' + by + ' ' + (bx + cubeW) + ',' + (by + isoY);
-          h += '<polygon points="' + topPts + '" fill="' + clr + '" stroke="white" stroke-width="1.5" opacity="0.65"/>';
-          /* Right side face */
-          var sidePts = (bx + cubeW) + ',' + (by + isoY) + ' ' + (bx + cubeW + isoX) + ',' + by + ' ' + (bx + cubeW + isoX) + ',' + (by + cubeH) + ' ' + (bx + cubeW) + ',' + (by + isoY + cubeH);
-          h += '<polygon points="' + sidePts + '" fill="' + clr + '" stroke="white" stroke-width="1.5" opacity="0.5"/>';
+      /* Draw back-to-front so front overlaps back (though wireframe so it doesn't matter) */
+      for (var row = st.d - 1; row >= 0; row--) {
+        for (var col = 0; col < st.w; col++) {
+          var sx = pad9 + col * cW + row * dX;
+          var sy = baseY - row * dY;
+          /* 8 vertices: front face (f) and back face (b), bottom (b) and top (t), left (l) and right (r) */
+          var fbl_x = sx, fbl_y = sy;
+          var fbr_x = sx + cW, fbr_y = sy;
+          var ftl_x = sx, ftl_y = sy - cH;
+          var ftr_x = sx + cW, ftr_y = sy - cH;
+          var bbl_x = sx + dX, bbl_y = sy - dY;
+          var bbr_x = sx + cW + dX, bbr_y = sy - dY;
+          var btl_x = sx + dX, btl_y = sy - cH - dY;
+          var btr_x = sx + cW + dX, btr_y = sy - cH - dY;
+          /* 12 edges drawn as lines (sticks) */
+          var edges = [
+            [fbl_x,fbl_y,fbr_x,fbr_y],[fbr_x,fbr_y,ftr_x,ftr_y],
+            [ftr_x,ftr_y,ftl_x,ftl_y],[ftl_x,ftl_y,fbl_x,fbl_y],
+            [bbl_x,bbl_y,bbr_x,bbr_y],[bbr_x,bbr_y,btr_x,btr_y],
+            [btr_x,btr_y,btl_x,btl_y],[btl_x,btl_y,bbl_x,bbl_y],
+            [fbl_x,fbl_y,bbl_x,bbl_y],[fbr_x,fbr_y,bbr_x,bbr_y],
+            [ftl_x,ftl_y,btl_x,btl_y],[ftr_x,ftr_y,btr_x,btr_y]
+          ];
+          for (var ei = 0; ei < edges.length; ei++) {
+            var e = edges[ei];
+            h += '<line x1="' + e[0] + '" y1="' + e[1] + '" x2="' + e[2] + '" y2="' + e[3] + '" stroke="#333" stroke-width="1.5" stroke-linecap="round"/>';
+          }
         }
       }
-      /* count label removed */
-      h += '</svg><div class="pattern-fig-label">Str ' + (f + 1) + '</div></div>';
+      h += '</svg><div class="pattern-fig-label">Structure ' + (f + 1) + '</div></div>';
     }
   }
 
