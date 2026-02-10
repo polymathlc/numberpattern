@@ -1407,8 +1407,7 @@ function buildViz(q, qi, prefix) {
           var isEdge = (j === i + 1) || (i === 0 && j === n - 1);
           var lineColor = isEdge ? '#888' : '#ccc';
           var lineW = isEdge ? 2 : 1.5;
-          var dash = isEdge ? '' : ' stroke-dasharray="4,2"';
-          h += '<line x1="' + pts[i].x.toFixed(1) + '" y1="' + pts[i].y.toFixed(1) + '" x2="' + pts[j].x.toFixed(1) + '" y2="' + pts[j].y.toFixed(1) + '" stroke="' + lineColor + '" stroke-width="' + lineW + '"' + dash + '/>';
+          h += '<line x1="' + pts[i].x.toFixed(1) + '" y1="' + pts[i].y.toFixed(1) + '" x2="' + pts[j].x.toFixed(1) + '" y2="' + pts[j].y.toFixed(1) + '" stroke="' + lineColor + '" stroke-width="' + lineW + '"/>';
         }
       }
       /* Draw circles at vertices */
