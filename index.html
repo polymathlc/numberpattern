@@ -1550,55 +1550,44 @@ function buildViz(q, qi, prefix) {
   }
 
   else if (q.n === 7 && q.tag === 'table-pattern') {
-    /* Q7 / A7: STAIRCASE RIGHT-TRIANGLE — grid with squares and diagonal triangles */
+    /* Q7 / A7: RIGHT-TRIANGLE with internal grid.
+       Figure n is a right triangle (right angle at bottom-left).
+       Hypotenuse goes from top-left to bottom-right.
+       Grid of (n+1)×(n+1) cells inside. Cells below diagonal = squares,
+       cells on diagonal = triangles (half-cells).
+       Triangles = n+1, Squares = n(n+1)/2. */
     var isHex = (q.title.indexOf('Hex') >= 0);
+    var fillClr = isHex ? '#e0e0e0' : '#f5c6d0';
     for (var f = 0; f < 4; f++) {
       var n = f + 1;
-      var cellSz7 = 22, pad5 = 12;
-      var svgW4 = n * cellSz7 + pad5 * 2, svgH4 = n * cellSz7 + pad5 * 2;
+      var gridN = n + 1;
+      var cellSz7 = 20, pad5 = 10;
+      var totalSz = gridN * cellSz7;
+      var svgW4 = totalSz + pad5 * 2;
+      var svgH4 = totalSz + pad5 * 2;
       h += '<div class="pattern-fig"><svg width="' + svgW4 + '" height="' + svgH4 + '" viewBox="0 0 ' + svgW4 + ' ' + svgH4 + '">';
-      /* Draw staircase: row r (0-indexed from top) has (r+1) cells wide at the bottom
-         We build a right triangle: bottom-left corner, going up-right as hypotenuse.
-         Row 0 = bottom row with n cells, row n-1 = top row with 1 cell */
-      var fillClr = isHex ? '#e0e0e0' : '#f5c6d0';
-      var strokeClr = isHex ? '#999' : '#999';
-      /* Fill the staircase squares */
-      for (var row = 0; row < n; row++) {
-        var cellsInRow = n - row; /* bottom row has n cells, top row has 1 */
-        for (var col = 0; col < cellsInRow; col++) {
-          var x7 = pad5 + col * cellSz7;
-          var y7 = pad5 + row * cellSz7;
-          h += '<rect x="' + x7 + '" y="' + y7 + '" width="' + cellSz7 + '" height="' + cellSz7 + '" fill="' + fillClr + '" stroke="' + strokeClr + '" stroke-width="1"/>';
-        }
+      /* Triangle vertices */
+      var tlx = pad5, tly = pad5;
+      var blx = pad5, bly = pad5 + totalSz;
+      var brx = pad5 + totalSz, bry = pad5 + totalSz;
+      /* Fill the entire triangle with pink */
+      h += '<polygon points="' + tlx + ',' + tly + ' ' + blx + ',' + bly + ' ' + brx + ',' + bry + '" fill="' + fillClr + '" stroke="none"/>';
+      /* Internal horizontal grid lines: at y = pad + k*cell, from left edge to hypotenuse */
+      for (var k = 1; k < gridN; k++) {
+        var ly = pad5 + k * cellSz7;
+        var lxEnd = pad5 + k * cellSz7;
+        h += '<line x1="' + pad5 + '" y1="' + ly + '" x2="' + lxEnd + '" y2="' + ly + '" stroke="#999" stroke-width="0.75"/>';
       }
-      /* Draw the diagonal hypotenuse line from top-right corner to bottom-right of staircase */
-      var hyp_x1 = pad5;
-      var hyp_y1 = pad5;
-      var hyp_x2 = pad5 + n * cellSz7;
-      var hyp_y2 = pad5 + n * cellSz7;
-      h += '<line x1="' + hyp_x1 + '" y1="' + hyp_y1 + '" x2="' + hyp_x2 + '" y2="' + hyp_y2 + '" stroke="#333" stroke-width="2"/>';
-      /* Draw outer border of staircase */
-      /* Left side: top to bottom */
-      h += '<line x1="' + pad5 + '" y1="' + pad5 + '" x2="' + pad5 + '" y2="' + (pad5 + n * cellSz7) + '" stroke="#333" stroke-width="2"/>';
-      /* Bottom side */
-      h += '<line x1="' + pad5 + '" y1="' + (pad5 + n * cellSz7) + '" x2="' + (pad5 + n * cellSz7) + '" y2="' + (pad5 + n * cellSz7) + '" stroke="#333" stroke-width="2"/>';
-      /* Staircase right edge */
-      for (var row = 0; row < n; row++) {
-        var cellsInRow = n - row;
-        var rx = pad5 + cellsInRow * cellSz7;
-        var ry_top = pad5 + row * cellSz7;
-        var ry_bot = pad5 + (row + 1) * cellSz7;
-        /* vertical segment at right edge of this row */
-        h += '<line x1="' + rx + '" y1="' + ry_top + '" x2="' + rx + '" y2="' + ry_bot + '" stroke="#333" stroke-width="2"/>';
-        /* horizontal step going left for next row (except last row) */
-        if (row < n - 1) {
-          var nextRx = pad5 + (n - row - 1) * cellSz7;
-          h += '<line x1="' + nextRx + '" y1="' + ry_bot + '" x2="' + rx + '" y2="' + ry_bot + '" stroke="#333" stroke-width="2"/>';
-        }
+      /* Internal vertical grid lines: at x = pad + k*cell, from hypotenuse down to bottom */
+      for (var k = 1; k < gridN; k++) {
+        var lx = pad5 + k * cellSz7;
+        var lyStart = pad5 + k * cellSz7;
+        h += '<line x1="' + lx + '" y1="' + lyStart + '" x2="' + lx + '" y2="' + bly + '" stroke="#999" stroke-width="0.75"/>';
       }
-      /* Top horizontal line */
-      var topCells = n;
-      h += '<line x1="' + pad5 + '" y1="' + pad5 + '" x2="' + (pad5 + topCells * cellSz7) + '" y2="' + pad5 + '" stroke="#333" stroke-width="2"/>';
+      /* Outer triangle border */
+      h += '<line x1="' + tlx + '" y1="' + tly + '" x2="' + blx + '" y2="' + bly + '" stroke="#333" stroke-width="1.5"/>';
+      h += '<line x1="' + blx + '" y1="' + bly + '" x2="' + brx + '" y2="' + bry + '" stroke="#333" stroke-width="1.5"/>';
+      h += '<line x1="' + tlx + '" y1="' + tly + '" x2="' + brx + '" y2="' + bry + '" stroke="#333" stroke-width="1.5"/>';
       h += '</svg><div class="pattern-fig-label">Figure ' + (f + 1) + '</div></div>';
     }
   }
